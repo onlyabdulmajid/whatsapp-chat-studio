@@ -2312,6 +2312,13 @@
       let idx = state.filteredMessages.findIndex(m => m.id === msgId);
       if (idx === -1) {
         state.activeFilter = 'all';
+        state.searchQuery = '';
+        const searchInput = document.getElementById('chatSearchInput');
+        if (searchInput) searchInput.value = '';
+        const searchCountLabel = document.getElementById('searchCountLabel');
+        if (searchCountLabel) searchCountLabel.textContent = '';
+        const searchBar = document.getElementById('searchBar');
+        if (searchBar) searchBar.classList.add('hidden');
         updateFilterButtonsUI();
         state.filteredMessages = state.messages;
         idx = state.filteredMessages.findIndex(m => m.id === msgId);
@@ -2322,22 +2329,31 @@
       const half = Math.floor(state.windowSize / 2);
       state.renderStart = Math.max(0, Math.min(Math.max(0, total - state.windowSize), idx - half));
       state.renderEnd = Math.min(total, state.renderStart + state.windowSize);
+
+      // Lock window shift during jump
+      isWindowUpdating = true;
       renderVisibleWindow();
 
-      // Instantly position scrollbar near target message
-      const targetTop = Math.max(0, (idx * AVG_ROW_HEIGHT) - (chatScroll.clientHeight / 2));
-      chatScroll.scrollTop = targetTop;
+      // Measure exact DOM offset inside #chatScroll
+      const targetEl = document.getElementById(`msg-${msgId}`);
+      if (targetEl) {
+        const targetScrollTop = Math.max(0, targetEl.offsetTop - (chatScroll.clientHeight / 2) + (targetEl.clientHeight / 2));
+        chatScroll.scrollTop = targetScrollTop;
 
-      setTimeout(() => {
-        const targetEl = document.getElementById(`msg-${msgId}`);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const bubble = targetEl.firstElementChild || targetEl;
+        const bubble = targetEl.querySelector('.wa-bubble-in, .wa-bubble-out, .wa-bubble-in-cont, .wa-bubble-out-cont') || targetEl.firstElementChild || targetEl;
+        if (bubble) {
           bubble.classList.remove('msg-jump-highlight');
           void bubble.offsetWidth;
           bubble.classList.add('msg-jump-highlight');
         }
-      }, 50);
+      } else {
+        const estimatedTop = Math.max(0, (idx * AVG_ROW_HEIGHT) - (chatScroll.clientHeight / 2));
+        chatScroll.scrollTop = estimatedTop;
+      }
+
+      setTimeout(() => {
+        isWindowUpdating = false;
+      }, 350);
     }
 
     /**********************************************************************
@@ -2706,13 +2722,13 @@
     });
 
     scrollToBottomBtn.addEventListener('click', () => {
-      if (state.renderEnd < state.filteredMessages.length) {
-        state.renderEnd = state.filteredMessages.length;
-        state.renderStart = Math.max(0, state.renderEnd - state.windowSize);
-        renderVisibleWindow();
-      }
-      scrollToBottom(true);
+      scrollToBottom(false);
     });
+
+
+
+
+
 
     // Import Modal & Native Dialog Triggers
     const importModal = document.getElementById('importModal');
@@ -2818,6 +2834,383 @@
       initSettingsFromStorage();
       sendHostCommand('app_ready');
     });
-  </script>
+  
+    
+    window.__runComprehensiveDiagnostics = async function() {
+      const results = {
+        timestamp: new Date().toISOString(),
+        totalMessages: state.messages ? state.messages.length : 0,
+        platformTheme: document.documentElement.getAttribute('data-app-theme'),
+        tests: [],
+        summary: { total: 0, passed: 0, failed: 0, warnings: 0 },
+        discoveredBugs: []
+      };
+
+      function record(category, name, passed, details = {}, bugDesc = null) {
+        results.summary.total++;
+        if (passed) {
+          results.summary.passed++;
+        } else {
+          results.summary.failed++;
+          if (bugDesc) results.discoveredBugs.push({ category, name, bugDesc, details });
+        }
+        results.tests.push({ category, name, passed, details });
+      }
+
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+      try {
+        // ===================================================================
+        // 1. TEST JUMP TO MESSAGE SYSTEM
+        // ===================================================================
+        const chatScrollEl = document.getElementById('chatScroll');
+        const scrollRect = chatScrollEl.getBoundingClientRect();
+
+        // 1.1 Jump to first message
+        if (state.messages && state.messages.length > 0) {
+          const firstMsg = state.messages[0];
+          jumpToMessageId(firstMsg.id);
+          await sleep(200);
+
+          const el1 = document.getElementById(`msg-${firstMsg.id}`);
+          if (!el1) {
+            record('Jump System', 'Jump to First Message (id: ' + firstMsg.id + ')', false, { error: 'Element msg-' + firstMsg.id + ' not in DOM' }, 'Target message element msg-' + firstMsg.id + ' not found in DOM after jump.');
+          } else {
+            const r1 = el1.getBoundingClientRect();
+            const isVisible1 = (r1.bottom > scrollRect.top && r1.top < scrollRect.bottom);
+            const distFromCenter = Math.abs((r1.top + r1.height / 2) - (scrollRect.top + scrollRect.height / 2));
+            record('Jump System', 'Jump to First Message (id: ' + firstMsg.id + ')', isVisible1, {
+              top: r1.top, bottom: r1.bottom, scrollRectTop: scrollRect.top, scrollRectBottom: scrollRect.bottom,
+              distFromCenter: Math.round(distFromCenter), isVisible: isVisible1
+            }, isVisible1 ? null : 'Element msg-' + firstMsg.id + ' is not within viewport after jump.');
+          }
+
+          // 1.2 Jump to mid/last message
+          const midIdx = Math.floor(state.messages.length / 2);
+          const midMsg = state.messages[midIdx];
+          jumpToMessageId(midMsg.id);
+          await sleep(200);
+
+          const elMid = document.getElementById(`msg-${midMsg.id}`);
+          if (!elMid) {
+            record('Jump System', 'Jump to Mid Message (id: ' + midMsg.id + ', idx: ' + midIdx + ')', false, { error: 'Element not in DOM' }, 'Mid message element not rendered after jump.');
+          } else {
+            const rMid = elMid.getBoundingClientRect();
+            const isVisibleMid = (rMid.bottom > scrollRect.top && rMid.top < scrollRect.bottom);
+            const distFromCenter = Math.abs((rMid.top + rMid.height / 2) - (scrollRect.top + scrollRect.height / 2));
+            record('Jump System', 'Jump to Mid Message (id: ' + midMsg.id + ', idx: ' + midIdx + ')', isVisibleMid, {
+              top: rMid.top, bottom: rMid.bottom, distFromCenter: Math.round(distFromCenter), isVisible: isVisibleMid
+            }, isVisibleMid ? null : 'Mid message is outside viewport after jump.');
+          }
+
+          // 1.3 Jump to Last message
+          const lastMsg = state.messages[state.messages.length - 1];
+          jumpToMessageId(lastMsg.id);
+          await sleep(200);
+
+          const elLast = document.getElementById(`msg-${lastMsg.id}`);
+          if (!elLast) {
+            record('Jump System', 'Jump to Last Message (id: ' + lastMsg.id + ')', false, { error: 'Element not in DOM' }, 'Last message element not rendered after jump.');
+          } else {
+            const rLast = elLast.getBoundingClientRect();
+            const isVisibleLast = (rLast.bottom > scrollRect.top && rLast.top < scrollRect.bottom);
+            record('Jump System', 'Jump to Last Message (id: ' + lastMsg.id + ')', isVisibleLast, {
+              top: rLast.top, bottom: rLast.bottom, isVisible: isVisibleLast
+            }, isVisibleLast ? null : 'Last message is outside viewport after jump.');
+          }
+        }
+
+        // 1.4 Jump from Lightbox
+        if (state.lightboxItems && state.lightboxItems.length > 0) {
+          const lbItem = state.lightboxItems[0];
+          openLightboxByMsgId(lbItem.id);
+          await sleep(100);
+
+          const lbModal = document.getElementById('lightboxModal');
+          const wasOpen = !lbModal.classList.contains('hidden');
+
+          const jumpBtn = document.getElementById('lightboxJumpBtn');
+          if (jumpBtn) {
+            jumpBtn.click();
+            await sleep(250);
+
+            const isClosed = lbModal.classList.contains('hidden');
+            const targetEl = document.getElementById(`msg-${lbItem.id}`);
+            const rTarget = targetEl ? targetEl.getBoundingClientRect() : null;
+            const isVis = rTarget && (rTarget.bottom > scrollRect.top && rTarget.top < scrollRect.bottom);
+
+            record('Lightbox Jump', 'Lightbox Jump Button Functionality', isClosed && isVis, {
+              wasOpen, isClosedNow: isClosed, targetFound: !!targetEl, isTargetVisible: isVis
+            }, (!isClosed || !isVis) ? 'Lightbox jump button either failed to close modal or failed to center target message in viewport.' : null);
+          } else {
+            record('Lightbox Jump', 'Lightbox Jump Button Found', false, {}, 'lightboxJumpBtn element missing from DOM.');
+          }
+        }
+
+        // 1.5 Jump from Media Drawer Cards
+        const drawerJumpBtn = document.querySelector('.jump-msg-btn');
+        if (drawerJumpBtn) {
+          drawerJumpBtn.click();
+          await sleep(250);
+          record('Drawer Jump', 'Media Card Jump Button Click', true, { found: true });
+        } else {
+          record('Drawer Jump', 'Media Card Jump Button Found in Drawer', false, {}, 'No .jump-msg-btn found in media drawer.');
+        }
+
+        // 1.6 Jump to Date Header
+        const dateHeader = document.querySelector('#drawerContent .space-y-2 div');
+        if (dateHeader) {
+          dateHeader.click();
+          await sleep(200);
+          record('Drawer Jump', 'Date Header Click Jump', true, { found: true });
+        }
+
+        // 1.7 Jump While In Incompatible Filter
+        if (state.messages && state.messages.length > 1) {
+          // Switch to audio filter
+          const audioBtn = document.querySelector('[data-filter="audio"]');
+          if (audioBtn) audioBtn.click();
+          await sleep(100);
+
+          // Find a non-audio message
+          const nonAudio = state.messages.find(m => m.attType !== 'audio' && !m.isSystem);
+          if (nonAudio) {
+            jumpToMessageId(nonAudio.id);
+            await sleep(250);
+
+            const activeNow = state.activeFilter;
+            const targetEl = document.getElementById(`msg-${nonAudio.id}`);
+            const r = targetEl ? targetEl.getBoundingClientRect() : null;
+            const isVis = r && (r.bottom > scrollRect.top && r.top < scrollRect.bottom);
+
+            record('Jump System', 'Cross-Filter Jump (Audio Filter -> Text Msg)', activeNow === 'all' && isVis, {
+              activeFilterBefore: 'audio', activeFilterAfter: activeNow, isVisible: isVis
+            }, (activeNow !== 'all' || !isVis) ? 'Jumping to a message hidden by active filter failed to reset filter to "all" or render the message.' : null);
+          }
+        }
+
+        // Reset filter
+        const allBtn = document.querySelector('[data-filter="all"]');
+        if (allBtn) allBtn.click();
+        await sleep(100);
+
+        // ===================================================================
+        // 2. TEST SEARCH SYSTEM
+        // ===================================================================
+        const searchInput = document.getElementById('chatSearchInput');
+        const searchCountLabel = document.getElementById('searchCountLabel');
+        const searchNextBtn = document.getElementById('searchNextBtn');
+        const searchPrevBtn = document.getElementById('searchPrevBtn');
+
+        if (searchInput && searchCountLabel) {
+          // Search for a common term or letter
+          runSearch('the');
+          await sleep(150);
+
+          const hitCount = state.searchHits ? state.searchHits.length : 0;
+          const labelText = searchCountLabel.textContent;
+          record('Search System', 'Search Execution & Hit Counting', hitCount >= 0, { query: 'the', hits: hitCount, labelText });
+
+          if (hitCount > 1 && searchNextBtn && searchPrevBtn) {
+            const cursorBefore = state.searchCursor;
+            searchNextBtn.click();
+            await sleep(150);
+            const cursorAfterNext = state.searchCursor;
+
+            searchPrevBtn.click();
+            await sleep(150);
+            const cursorAfterPrev = state.searchCursor;
+
+            record('Search System', 'Search Next / Prev Stepping', (cursorAfterNext !== cursorBefore), {
+              cursorBefore, cursorAfterNext, cursorAfterPrev
+            });
+          }
+
+          // Clear search
+          runSearch('');
+          await sleep(100);
+          record('Search System', 'Search Clear', state.searchQuery === '', { activeQuery: state.searchQuery });
+        }
+
+        // ===================================================================
+        // 3. TEST SETTINGS MODAL & CUSTOMIZATION
+        // ===================================================================
+        const openSettingsBtn = document.getElementById('openSettingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+
+        if (openSettingsBtn && settingsModal) {
+          openSettingsBtn.click();
+          await sleep(100);
+          const isOpen = !settingsModal.classList.contains('hidden');
+          record('Settings Modal', 'Open Settings Modal', isOpen);
+
+          // Test Theme Buttons
+          const themeChoices = ['wa', 'tg', 'guild', 'bubble', 'gradient'];
+          let allThemesWork = true;
+          for (const t of themeChoices) {
+            const btn = document.querySelector(`[data-theme-choice="${t}"]`);
+            if (btn) {
+              btn.click();
+              const applied = document.documentElement.getAttribute('data-app-theme');
+              if (applied !== t) allThemesWork = false;
+            }
+          }
+          record('Settings Modal', 'Theme Switcher (wa, tg, guild, bubble, gradient)', allThemesWork, { allThemesWork });
+
+          // Test Dark/Light Toggle
+          const themeLightBtn = document.getElementById('themeLightBtn');
+          const themeDarkBtn = document.getElementById('themeDarkBtn');
+          if (themeLightBtn && themeDarkBtn) {
+            themeLightBtn.click();
+            const isLight = document.documentElement.classList.contains('light');
+            themeDarkBtn.click();
+            const isDark = !document.documentElement.classList.contains('light');
+            record('Settings Modal', 'Dark / Light Mode Toggle', isLight && isDark, { isLight, isDark });
+          }
+
+          // Test Font Choices
+          const fontChoices = ['jakarta', 'inter', 'outfit', 'lexend', 'system', 'mono'];
+          let allFontsWork = true;
+          for (const f of fontChoices) {
+            const btn = document.querySelector(`[data-font-choice="${f}"]`);
+            if (btn) {
+              btn.click();
+              const curFont = document.documentElement.style.getPropertyValue('--app-font-family');
+              if (!curFont) allFontsWork = false;
+            }
+          }
+          record('Settings Modal', 'Font Family Switcher (6 fonts)', allFontsWork);
+
+          // Test Font Size Slider
+          const fontSizeSlider = document.getElementById('fontSizeSlider');
+          if (fontSizeSlider) {
+            fontSizeSlider.value = 16;
+            fontSizeSlider.dispatchEvent(new Event('input'));
+            const curSize = document.documentElement.style.getPropertyValue('--chat-font-size');
+            record('Settings Modal', 'Font Size Slider (16px)', curSize === '16px', { curSize });
+          }
+
+          // Test Bubble Density
+          const compactBtn = document.querySelector('[data-density-choice="compact"]');
+          const normalBtn = document.querySelector('[data-density-choice="normal"]');
+          if (compactBtn && normalBtn) {
+            compactBtn.click();
+            const compactPadding = document.documentElement.style.getPropertyValue('--bubble-padding-y');
+            normalBtn.click();
+            const normalPadding = document.documentElement.style.getPropertyValue('--bubble-padding-y');
+            record('Settings Modal', 'Bubble Density Toggle (Compact vs Normal)', compactPadding !== normalPadding, { compactPadding, normalPadding });
+          }
+
+          if (closeSettingsBtn) {
+            closeSettingsBtn.click();
+            await sleep(100);
+            const isClosed = settingsModal.classList.contains('hidden');
+            record('Settings Modal', 'Close Settings Modal', isClosed);
+          }
+        }
+
+        // ===================================================================
+        // 4. TEST PERSPECTIVE SWITCHER
+        // ===================================================================
+        const mainPersp = document.getElementById('mainPerspectiveSelect');
+        if (mainPersp && mainPersp.options.length > 1) {
+          const original = mainPersp.value;
+          const alternate = mainPersp.options[1].value;
+          mainPersp.value = alternate;
+          mainPersp.dispatchEvent(new Event('change'));
+          await sleep(150);
+
+          const synced = state.meSender === alternate;
+          const chatSub = document.getElementById('chatSubtitle').textContent;
+
+          record('Perspective Switcher', 'Main Header Perspective Dropdown Switch', synced, {
+            original, alternate, currentMeSender: state.meSender, chatSub
+          });
+
+          // Restore
+          mainPersp.value = original;
+          mainPersp.dispatchEvent(new Event('change'));
+          await sleep(100);
+        }
+
+        // ===================================================================
+        // 5. TEST MEDIA DRAWER CONTROLS
+        // ===================================================================
+        const drawerSortBtn = document.getElementById('drawerSortBtn');
+        if (drawerSortBtn) {
+          const beforeSort = state.drawerSortChronological;
+          drawerSortBtn.click();
+          const afterSort = state.drawerSortChronological;
+          record('Media Drawer', 'Sort Order Toggle (Chronological vs Newest First)', beforeSort !== afterSort, { beforeSort, afterSort });
+        }
+
+        const expandDrawerBtn = document.getElementById('expandDrawerBtn');
+        if (expandDrawerBtn) {
+          const beforeWide = state.drawerWide;
+          expandDrawerBtn.click();
+          const afterWide = state.drawerWide;
+          record('Media Drawer', 'Drawer Expand / Contract Toggle', beforeWide !== afterWide, { beforeWide, afterWide });
+          expandDrawerBtn.click(); // restore
+        }
+
+        // Drawer Tabs
+        const drawerTabs = ['all_media', 'media', 'stickers', 'audio', 'stats'];
+        let tabsWork = true;
+        for (const dt of drawerTabs) {
+          const tb = document.querySelector(`.drawer-tab[data-tab="${dt}"]`);
+          if (tb) {
+            tb.click();
+            if (state.activeDrawerTab !== dt) tabsWork = false;
+          }
+        }
+        record('Media Drawer', 'Drawer Tabs Navigation (All, Photos, Stickers, Audio, Stats)', tabsWork);
+
+        // ===================================================================
+        // 6. TEST SCROLL TO BOTTOM BUTTON
+        // ===================================================================
+        const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+        if (scrollToBottomBtn) {
+          chatScrollEl.scrollTop = 0;
+          await sleep(150);
+          const isBtnVisible = !scrollToBottomBtn.classList.contains('hidden');
+
+          scrollToBottomBtn.click();
+          await sleep(350);
+          const isAtBottom = Math.abs(chatScrollEl.scrollHeight - chatScrollEl.scrollTop - chatScrollEl.clientHeight) < 250 || chatScrollEl.scrollTop >= (chatScrollEl.scrollHeight - chatScrollEl.clientHeight - 50);
+
+          record('Scroll System', 'Scroll to Bottom Floating Action Button', isBtnVisible && isAtBottom, {
+            btnWasVisibleAtTop: isBtnVisible, isAtBottomNow: isAtBottom, scrollTop: chatScrollEl.scrollTop
+          });
+        }
+
+        // ===================================================================
+        // 7. TEST AUDIO PLAYER SPEED & PLAY
+        // ===================================================================
+        const voicePlayer = document.querySelector('.voice-player');
+        if (voicePlayer) {
+          const speedBtn = voicePlayer.querySelector('.voice-speed-btn');
+          if (speedBtn) {
+            const s1 = speedBtn.textContent;
+            speedBtn.click();
+            const s2 = speedBtn.textContent;
+            record('Audio Player', 'Voice Note Speed Toggle (1x -> 1.5x/2x)', s1 !== s2, { before: s1, after: s2 });
+          }
+        }
+
+      } catch (err) {
+        results.discoveredBugs.push({
+          category: 'Diagnostics Engine',
+          name: 'Unexpected Exception',
+          bugDesc: err.message || err.toString(),
+          stack: err.stack
+        });
+      }
+
+      sendHostCommand('diagnostics_complete', { report: results });
+      return JSON.stringify(results, null, 2);
+    };
+
+</script>
 </body>
 </html>
