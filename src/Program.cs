@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -675,11 +675,11 @@ namespace ChatVaultStudio
 
                 if (msg.Contains("\"app_ready\""))
                 {
-                    if (_startupArgs != null && _startupArgs.Length >= 2 && _startupArgs[0] == "--verify-giant")
+                    if (_startupArgs != null && _startupArgs.Length >= 2 && (_startupArgs[0] == "--verify-giant" || _startupArgs[0] == "--run-giant-diagnostics"))
                     {
                         Task.Run(() => BuildAndLoadRichDemoChat(true));
                     }
-                    else if (_startupArgs != null && _startupArgs.Length > 0 && _startupArgs[0] != "--verify" && (File.Exists(_startupArgs[0]) || Directory.Exists(_startupArgs[0])))
+                    else if (_startupArgs != null && _startupArgs.Length > 0 && _startupArgs[0] != "--verify" && _startupArgs[0] != "--run-diagnostics" && (File.Exists(_startupArgs[0]) || Directory.Exists(_startupArgs[0])))
                     {
                         ImportPathsAsync(_startupArgs);
                     }
@@ -690,8 +690,34 @@ namespace ChatVaultStudio
                     return;
                 }
 
-                if (msg.Contains("\"render_complete\""))
+                
+                if (msg.Contains("\"diagnostics_complete\""))
                 {
+                    if (_startupArgs != null && _startupArgs.Length >= 2)
+                    {
+                        File.WriteAllText(_startupArgs[1], msg, Encoding.UTF8);
+                    }
+                    Close();
+                    return;
+                }
+if (msg.Contains("\"render_complete\""))
+                {
+                    if (_startupArgs != null && _startupArgs.Length >= 2 && (_startupArgs[0] == "--run-diagnostics" || _startupArgs[0] == "--run-giant-diagnostics"))
+                    {
+                        var diagTimer = new System.Windows.Forms.Timer();
+                        diagTimer.Interval = 350;
+                        diagTimer.Tick += (s, ev) =>
+                        {
+                            diagTimer.Stop();
+                            diagTimer.Dispose();
+                            if (_controller != null && _controller.CoreWebView2 != null)
+                            {
+                                _controller.CoreWebView2.ExecuteScriptAsync("window.__runComprehensiveDiagnostics()");
+                            }
+                        };
+                        diagTimer.Start();
+                        return;
+                    }
                     if (_startupArgs != null && _startupArgs.Length >= 2 && (_startupArgs[0] == "--verify" || _startupArgs[0] == "--verify-giant" || _startupArgs[0] == "--verify-settings"))
                     {
                         string outShot = _startupArgs[1];
@@ -793,7 +819,34 @@ namespace ChatVaultStudio
             catch { }
         }
 
-        private async void CaptureAndExitAsync(string outShot)
+                private async void RunDiagnosticsAndExitAsync(string outReport)
+        {
+            try
+            {
+                await Task.Delay(400);
+                if (_controller != null && _controller.CoreWebView2 != null)
+                {
+                    string jsResult = await _controller.CoreWebView2.ExecuteScriptAsync("window.__runComprehensiveDiagnostics()");
+                    if (!string.IsNullOrEmpty(jsResult) && jsResult.StartsWith("\"") && jsResult.EndsWith("\""))
+                    {
+                        try
+                        {
+                            jsResult = System.Text.RegularExpressions.Regex.Unescape(jsResult.Substring(1, jsResult.Length - 2));
+                        }
+                        catch { }
+                    }
+                    File.WriteAllText(outReport, jsResult, Encoding.UTF8);
+                }
+            }
+            catch (Exception ex)
+            {
+                File.WriteAllText(outReport, "{\"exception\": \"" + ex.Message + "\"}", Encoding.UTF8);
+            }
+            Close();
+        }
+
+
+private async void CaptureAndExitAsync(string outShot)
         {
             try
             {
