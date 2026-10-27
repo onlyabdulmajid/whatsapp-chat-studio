@@ -1,11 +1,14 @@
 # 💬 ChatVault Studio — Portable Chat Archive Viewer
 
-A high-performance, zero-dependency, single-file portable Windows application (`ChatVaultStudio.exe` / `WhatsAppChatStudio.exe`) and browser viewer for exploring exported chat archives with instant photo/sticker rendering, infinite-looping media, date-divided galleries, curated typography, and recognizable app themes.
+A high-performance, zero-dependency, single-file portable Windows application (`ChatVaultStudio.exe`) and standalone browser viewer (`chat-vault-viewer.html`) for exploring exported chat archives with instant photo/sticker rendering, infinite-looping media, date-divided galleries, curated typography, and non-trademarked recognizable app themes.
 
 ---
 
-## ✨ What's New in v2.1.0
+## ✨ Features
 
+- 📜 **100% Traditional Native Windows Scrollbar**: Built with dual virtual spacer divs. Supports native click-and-drag, track paging, and mouse wheel physics across 100,000+ messages without jumping or misalignment.
+- 🎯 **Precision "Jump to Message" Engine**: Directly centers target messages with exact DOM `offsetTop` positioning and momentary window-lock. Supports jumping from fullscreen Lightbox, media drawer cards, date headers, and search hits with pulse highlighting.
+- ⚡ **120 FPS Lag-Free Media Gallery**: Capped concurrent video playback with metadata preloading, lazy-loaded GIFs/photos, and scoped IntersectionObservers for butter-smooth browsing.
 - ⚙️ **Dedicated Studio Settings & Appearance Modal (`Ctrl+,`)**: Declutters the main interface by moving theme cards, font styling, density controls, perspective selectors, and benchmark triggers into an elegant floating modal with backdrop blur.
 - 🔤 **Curated Typography Engine**: Choose between 6 high-legibility font families:
   - **Plus Jakarta Sans** — Modern geometric sans-serif (Default)
@@ -17,7 +20,7 @@ A high-performance, zero-dependency, single-file portable Windows application (`
 - 📏 **Dynamic Font Size & Bubble Spacing Density**:
   - Live message text slider (`13px – 17px`) with crisp 12px minimum floor for timestamps and badges.
   - Bubble spacing density switcher: **Compact** (`5px × 8px`), **Normal** (`7px × 10px`), or **Spacious** (`10px × 14px`).
-- 🎨 **Decluttered Header & Trademark-Free Platform Themes**:
+- 🎨 **Decluttered Header & Recognizable Platform Themes**:
   - 3× horizontal breathing room for chat titles and subtitles without clipping.
   - Recognizable, non-actionable visual themes:
     - **WaChat Emerald** (`#005c4b` / `#10b981` clean minimal)
@@ -26,7 +29,7 @@ A high-performance, zero-dependency, single-file portable Windows application (`
     - **iBubble Blue** (`#0a84ff` glossy pill bubbles)
     - **InstaGrad Pink** (Purple-to-pink gradient social DM)
   - Quick Dark/Light mode toggle with instant theme accent harmonization.
-- 👁️ **Perspective Switcher ("View as")**: Switch between any participant in the conversation so their outgoing messages render in the primary accent bubble on the right.
+- 👁️ **Header Perspective Switcher ("View as")**: Direct dropdown on the main header to switch between participants so their outgoing messages render in the primary accent bubble on the right.
 - 🧩 **Dense Packed Media Grid**: Automatic `grid-flow-row-dense` layout packs small photos and stickers tightly around widescreen video/GIF cards.
 
 ---
