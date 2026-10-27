@@ -1,12 +1,29 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WhatsApp Chat Studio — Portable Edition</title>
+  <title>ChatVault Studio — Portable Chat Archive Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lexend:wght@400;500;600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="/tailwind.js"></script>
   <style>
-    :root, html[data-app-theme="whatsapp"] {
+        :root {
+      --app-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --chat-font-size: 14px;
+      --bubble-padding-y: 7px;
+      --bubble-padding-x: 10px;
+      --accent: #10b981;
+      --accent-strong: #059669;
+      --accent-soft: rgba(16, 185, 129, 0.15);
+      --accent-border: rgba(16, 185, 129, 0.3);
+    }
+    :root, html[data-app-theme="emerald"] {
+      --accent: #10b981;
+      --accent-strong: #059669;
+      --accent-soft: rgba(16, 185, 129, 0.15);
+      --accent-border: rgba(16, 185, 129, 0.3);
       --background: #0b141a;
       --card: #111b21;
       --panel: #202c33;
@@ -23,7 +40,11 @@
       --bubble-in-radius: 2px 12px 12px 12px;
       --bubble-cont-radius: 12px;
     }
-    html.light[data-app-theme="whatsapp"], html.light {
+    html.light[data-app-theme="emerald"], html.light {
+      --accent: #059669;
+      --accent-strong: #047857;
+      --accent-soft: rgba(5, 150, 105, 0.15);
+      --accent-border: rgba(5, 150, 105, 0.3);
       --background: #efeae2;
       --card: #f0f2f5;
       --panel: #ffffff;
@@ -38,8 +59,12 @@
       --bubble-in-border: #e2e8f0;
     }
 
-    /* 🔵 TELEGRAM THEME */
-    html[data-app-theme="telegram"] {
+    /* 🔵 SKY (paper-plane style) THEME */
+    html[data-app-theme="sky"] {
+      --accent: #38bdf8;
+      --accent-strong: #0284c7;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --accent-border: rgba(56, 189, 248, 0.3);
       --background: #0e1621;
       --card: #17212b;
       --panel: #242f3d;
@@ -56,7 +81,11 @@
       --bubble-in-radius: 15px 15px 15px 3px;
       --bubble-cont-radius: 15px;
     }
-    html.light[data-app-theme="telegram"] {
+    html.light[data-app-theme="sky"] {
+      --accent: #0284c7;
+      --accent-strong: #0369a1;
+      --accent-soft: rgba(2, 132, 199, 0.15);
+      --accent-border: rgba(2, 132, 199, 0.3);
       --background: #d6e4c6;
       --card: #ffffff;
       --panel: #f4f4f5;
@@ -71,8 +100,12 @@
       --bubble-in-border: #d9dce0;
     }
 
-    /* 🟣 DISCORD THEME */
-    html[data-app-theme="discord"] {
+    /* 🟣 GUILD (blurple gaming-chat style) THEME */
+    html[data-app-theme="guild"] {
+      --accent: #818cf8;
+      --accent-strong: #5865f2;
+      --accent-soft: rgba(88, 101, 242, 0.15);
+      --accent-border: rgba(88, 101, 242, 0.3);
       --background: #313338;
       --card: #2b2d31;
       --panel: #1e1f22;
@@ -89,7 +122,11 @@
       --bubble-in-radius: 8px;
       --bubble-cont-radius: 8px;
     }
-    html.light[data-app-theme="discord"] {
+    html.light[data-app-theme="guild"] {
+      --accent: #5865f2;
+      --accent-strong: #4752c4;
+      --accent-soft: rgba(88, 101, 242, 0.15);
+      --accent-border: rgba(88, 101, 242, 0.3);
       --background: #ffffff;
       --card: #f2f3f5;
       --panel: #e3e5e8;
@@ -104,8 +141,12 @@
       --bubble-in-border: #e3e5e8;
     }
 
-    /* 🍎 iMESSAGE THEME */
-    html[data-app-theme="imessage"] {
+    /* 🫧 BUBBLE (glossy blue pill style) THEME */
+    html[data-app-theme="bubble"] {
+      --accent: #38bdf8;
+      --accent-strong: #0a84ff;
+      --accent-soft: rgba(10, 132, 255, 0.15);
+      --accent-border: rgba(10, 132, 255, 0.3);
       --background: #000000;
       --card: #1c1c1e;
       --panel: #2c2c2e;
@@ -122,7 +163,11 @@
       --bubble-in-radius: 20px 20px 20px 4px;
       --bubble-cont-radius: 20px;
     }
-    html.light[data-app-theme="imessage"] {
+    html.light[data-app-theme="bubble"] {
+      --accent: #007aff;
+      --accent-strong: #0062cc;
+      --accent-soft: rgba(0, 122, 255, 0.15);
+      --accent-border: rgba(0, 122, 255, 0.3);
       --background: #ffffff;
       --card: #f2f2f7;
       --panel: #e5e5ea;
@@ -137,8 +182,12 @@
       --bubble-in-border: #dcdce0;
     }
 
-    /* 🩷 INSTAGRAM / MESSENGER THEME */
-    html[data-app-theme="instagram"] {
+    /* 🩷 GRADIENT (social DM style) THEME */
+    html[data-app-theme="gradient"] {
+      --accent: #ec4899;
+      --accent-strong: #a855f7;
+      --accent-soft: rgba(236, 72, 153, 0.15);
+      --accent-border: rgba(236, 72, 153, 0.3);
       --background: #09090d;
       --card: #121218;
       --panel: #1f1f29;
@@ -155,7 +204,11 @@
       --bubble-in-radius: 20px 20px 20px 5px;
       --bubble-cont-radius: 20px;
     }
-    html.light[data-app-theme="instagram"] {
+    html.light[data-app-theme="gradient"] {
+      --accent: #a855f7;
+      --accent-strong: #9333ea;
+      --accent-soft: rgba(168, 85, 247, 0.15);
+      --accent-border: rgba(168, 85, 247, 0.3);
       --background: #ffffff;
       --card: #fafafa;
       --panel: #f4f4f5;
@@ -180,7 +233,8 @@
       overflow: hidden;
       background-color: var(--background);
       color: var(--foreground);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--app-font-family);
+      font-size: var(--chat-font-size);
     }
 
     .wa-wallpaper {
@@ -272,6 +326,54 @@
       animation: progressShine 1.8s infinite linear;
       transition: width 0.18s ease-out;
     }
+    .bubble-inner {
+      padding: var(--bubble-padding-y) var(--bubble-padding-x);
+    }
+    .msg-text {
+      font-size: var(--chat-font-size);
+    }
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      color: var(--muted-foreground);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .icon-btn:hover {
+      background-color: var(--panel);
+      color: var(--foreground);
+    }
+    .filter-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      color: var(--muted-foreground);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .filter-btn:hover {
+      color: var(--foreground);
+    }
+    .filter-btn.active {
+      background-color: var(--card);
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .filter-btn[data-variant="menu"] {
+      width: 100%;
+      text-align: left;
+      padding: 6px 10px;
+    }
+    .filter-btn[data-variant="menu"]:hover {
+      background-color: var(--panel);
+    }
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased select-none h-full flex flex-col">
@@ -290,7 +392,7 @@
             </svg>
           </div>
           <div>
-            <h3 id="progressTitle" class="text-sm font-bold text-[var(--foreground)]">Importing WhatsApp Archive...</h3>
+            <h3 id="progressTitle" class="text-sm font-bold text-[var(--foreground)]">Importing Chat Archive...</h3>
             <p id="progressPhase" class="text-xs text-emerald-400 font-medium">Initializing multi-threaded engine</p>
           </div>
         </div>
@@ -336,7 +438,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
         </svg>
       </div>
-      <h3 class="text-lg font-bold text-[var(--foreground)] mb-1">Drop Giant WhatsApp Archive or Folder</h3>
+      <h3 class="text-lg font-bold text-[var(--foreground)] mb-1">Drop a Chat Archive, Folder or Log Files</h3>
       <p class="text-sm text-[var(--muted-foreground)]">
         Native zero-copy path detection for <span class="font-semibold text-emerald-400">.zip</span> archives, folders, or <span class="font-semibold text-emerald-400">.txt + media files</span>
       </p>
@@ -346,81 +448,70 @@
   <!-- ===================================================================
        3. TOP APP HEADER
        =================================================================== -->
-  <header class="bg-[var(--card)] border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 z-20">
-    <!-- Left: Chat identity & stats -->
-    <div class="flex items-center gap-3 min-w-0">
-      <div id="chatAvatar" class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
-        WA
+  <header class="app-header bg-[var(--card)] border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between gap-4 shrink-0 z-20">
+    <!-- Left: Chat identity & stats (gets all the room it needs) -->
+    <div class="flex items-center gap-3 min-w-0 flex-1">
+      <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[var(--accent)] flex items-center justify-center font-bold text-sm shrink-0 font-display">
+        CV
       </div>
       <div class="min-w-0">
-        <div class="flex items-center gap-2">
-          <h1 id="chatTitle" class="font-semibold text-sm text-[var(--foreground)] truncate">WhatsApp Chat Studio</h1>
-          <span id="msgCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-[var(--background)] border border-[var(--border)] text-emerald-400 font-semibold shrink-0">0 msgs</span>
+        <div class="flex items-center gap-2 min-w-0">
+          <h1 id="chatTitle" class="font-display font-semibold text-[15px] leading-tight text-[var(--foreground)] truncate">ChatVault Studio</h1>
+          <span id="msgCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-[var(--background)] border border-[var(--border)] text-[var(--accent)] font-semibold shrink-0">0 msgs</span>
         </div>
-        <p id="chatSubtitle" class="text-xs text-[var(--muted-foreground)] truncate">Native Multi-Threaded Engine • Instant RAM Photo Cache</p>
+        <button id="chatSubtitle" class="block max-w-full text-left text-xs text-[var(--muted-foreground)] truncate hover:text-[var(--foreground)] transition" title="Click to change whose perspective you view the chat from">Portable chat archive viewer</button>
       </div>
     </div>
 
-    <!-- Right Controls -->
+    <!-- Right Controls (focused & minimal) -->
     <div class="flex items-center gap-1.5 shrink-0 justify-end">
-      <!-- Perspective Selector ("View As") -->
-      <div class="flex items-center gap-1 bg-[var(--background)] border border-[var(--border)] rounded-lg px-2 py-1" title="Choose which participant is 'You' (right-aligned outgoing bubbles)">
-        <span class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">View as:</span>
-        <select id="viewAsSelect" class="bg-[var(--background)] text-xs font-semibold text-[var(--foreground)] focus:outline-none cursor-pointer max-w-[100px] truncate">
-          <option value="">Select sender...</option>
+      <!-- Chat Perspective Selector on Main Header -->
+      <div id="mainPerspectiveWrapper" class="flex items-center gap-1.5 bg-[var(--background)] border border-[var(--border)] rounded-xl px-2.5 py-1 text-xs shadow-sm">
+        <span class="text-[var(--muted-foreground)] font-medium whitespace-nowrap">View as:</span>
+        <select id="mainPerspectiveSelect" class="bg-transparent text-[var(--accent)] font-bold focus:outline-none cursor-pointer max-w-[130px] truncate" title="Change chat perspective: your messages appear on the right side in accent bubbles">
+          <option value="">Auto</option>
         </select>
       </div>
-
-      <!-- Media Filter Pill -->
-      <div class="hidden lg:flex items-center bg-[var(--background)] border border-[var(--border)] rounded-lg p-0.5">
-        <button data-filter="all" class="filter-btn text-xs px-2 py-1 rounded-md font-medium bg-emerald-600 text-white transition">All</button>
-        <button data-filter="all_media" class="filter-btn text-xs px-1.5 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">All Media</button>
-        <button data-filter="photo" class="filter-btn text-xs px-1.5 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Photos</button>
-        <button data-filter="sticker" class="filter-btn text-xs px-1.5 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Stickers</button>
-        <button data-filter="audio" class="filter-btn text-xs px-1.5 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Voice</button>
-        <button data-filter="video" class="filter-btn text-xs px-1.5 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Video</button>
+      <!-- Quick Filter Pill -->
+      <div class="relative hidden md:flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-0.5">
+        <button data-filter="all" class="filter-btn">All</button>
+        <button data-filter="all_media" class="filter-btn">Media</button>
+        <button data-filter="audio" class="filter-btn">Voice</button>
+        <button id="moreFiltersBtn" class="px-1.5 py-1 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition" title="More filters">▾</button>
+        <div id="moreFiltersMenu" class="hidden absolute right-0 top-full mt-1.5 w-40 p-1 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-2xl z-30 flex-col gap-0.5">
+          <button data-filter="photo" data-variant="menu" class="filter-btn">🖼️ Photos only</button>
+          <button data-filter="sticker" data-variant="menu" class="filter-btn">✨ Stickers only</button>
+          <button data-filter="video" data-variant="menu" class="filter-btn">🎬 Videos &amp; GIFs</button>
+        </div>
       </div>
 
-      <!-- 25K Giant Archive Benchmark Button -->
-      <button id="giantStressTestBtn" class="hidden sm:flex items-center gap-1 text-xs font-semibold px-2 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 hover:bg-amber-500/25 transition" title="Generate and import a 25,000-message multi-year archive with hundreds of photos & stickers">
-        <span>⚡ 25K Test</span>
-      </button>
-
       <!-- Search Toggle Button -->
-      <button id="toggleSearchBtn" class="p-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition" title="Search in chat (Ctrl+F)">
+      <button id="toggleSearchBtn" class="icon-btn" title="Search in chat (Ctrl+F)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
       </button>
 
-      <!-- App Theme Selector (WhatsApp / Telegram / Discord / iMessage / Instagram) -->
-      <div class="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-lg px-2 py-1" title="Switch Chat App Theme (WhatsApp, Telegram, Discord, iMessage, Instagram)">
-        <select id="appThemeSelect" class="bg-[var(--background)] text-xs font-semibold text-[var(--foreground)] focus:outline-none cursor-pointer">
-          <option value="whatsapp">🟢 WhatsApp</option>
-          <option value="telegram">🔵 Telegram</option>
-          <option value="discord">🟣 Discord</option>
-          <option value="imessage">🍎 iMessage</option>
-          <option value="instagram">🩷 Instagram</option>
-        </select>
-      </div>
-
-      <!-- Dark / Light Mode Toggle -->
-      <button id="themeToggleBtn" class="p-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition" title="Toggle Dark / Light Mode">
-        🌓
-      </button>
-
       <!-- Import Button -->
-      <button id="openImportModalBtn" class="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
+      <button id="openImportModalBtn" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--accent-strong)] hover:brightness-110 text-white shadow-sm transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
         </svg>
         <span>Import</span>
       </button>
 
-      <!-- Toggle Right Drawer -->
-      <button id="toggleDrawerBtn" class="p-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition" title="Toggle Media, Stickers & Analytics">
+      <!-- Settings -->
+      <button id="openSettingsBtn" class="icon-btn" title="Settings & Appearance (Ctrl+,)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </button>
+
+      <!-- Toggle Right Drawer -->
+      <button id="toggleDrawerBtn" class="icon-btn" title="Toggle media gallery & stats">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm11-1v16"/>
         </svg>
       </button>
     </div>
@@ -492,26 +583,16 @@
         </svg>
       </button>
 
-      <!-- Bottom Status / Telemetry Bar -->
-      <div class="bg-[var(--card)] border-t border-[var(--border)] px-4 py-2 flex items-center justify-between gap-3 shrink-0">
-        <div class="flex items-center gap-2.5 text-xs text-[var(--muted-foreground)] truncate">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <!-- Bottom Status Bar (single clean line, never clips) -->
+      <div class="bg-[var(--card)] border-t border-[var(--border)] px-4 py-1.5 flex items-center justify-between gap-3 shrink-0 text-xs text-[var(--muted-foreground)]">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="inline-flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
             <span id="mediaCountText">0 media files</span>
           </span>
-          <span id="ramCacheBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-mono text-xs">
-            RAM Cache: 0 MB
-          </span>
-          <span id="windowRangeText" class="hidden md:inline text-xs text-[var(--muted-foreground)] font-mono"></span>
+          <span id="windowRangeText" class="hidden md:inline font-mono truncate"></span>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <button id="nativeAddMediaBtn" class="text-xs px-2.5 py-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] hover:border-emerald-500/60 transition">
-            + Attach Media Files
-          </button>
-          <button id="resetDemoBtn" class="text-xs px-2.5 py-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
-            Load Demo
-          </button>
-        </div>
+        <span id="ramCacheBadge" class="hidden sm:inline font-mono shrink-0" title="Photos, stickers &amp; GIFs held in memory for instant display">RAM cache: 0 MB</span>
       </div>
     </main>
 
@@ -553,8 +634,8 @@
     <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
         <div>
-          <h2 class="text-base font-bold text-[var(--foreground)]">Import Chat Archive (Multi-Platform)</h2>
-          <p class="text-xs text-[var(--muted-foreground)]">Supports WhatsApp, Telegram Desktop, Discord, Instagram, Messenger, LINE &amp; Signal</p>
+          <h2 class="text-base font-bold text-[var(--foreground)]">Import Chat Archive (Universal Engine)</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Supports WaChat (.zip/.txt), TelePaper (result.json/.html), CordGuild (.json/.csv), InstaGrad &amp; SocialDM logs, and TabTalk / SecureNote logs</p>
         </div>
         <button id="closeImportModalBtn" class="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -564,11 +645,11 @@
       <div class="p-5 overflow-y-auto space-y-4">
         <!-- Supported Platforms Pill Bar -->
         <div class="flex flex-wrap items-center gap-1.5 text-xs">
-          <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">🟢 WhatsApp (.zip / .txt)</span>
-          <span class="px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold">🔵 Telegram (result.json / .html)</span>
-          <span class="px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-semibold">🟣 Discord (.json / .txt / .csv)</span>
-          <span class="px-2.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-400 font-semibold">🩷 Instagram &amp; Messenger (message_1.json)</span>
-          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold">💬 LINE / Kakao / Signal</span>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">🟢 WaChat (.zip / .txt)</span>
+          <span class="px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold">🔵 TelePaper (result.json / .html)</span>
+          <span class="px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-semibold">🟣 CordGuild (.json / .txt / .csv)</span>
+          <span class="px-2.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-400 font-semibold">🩷 InstaGrad &amp; SocialDM (message_1.json)</span>
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold">💬 TabTalk / SecureNote Logs</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <!-- Native Option 1: .ZIP Archive -->
@@ -623,7 +704,7 @@
         </div>
 
         <div>
-          <textarea id="pasteChatTextarea" rows="5" placeholder="Paste WhatsApp exported .txt content here..." class="w-full rounded-xl bg-[var(--background)] border border-[var(--border)] p-3 text-xs text-[var(--foreground)] font-mono focus:outline-none focus:border-emerald-500 select-text"></textarea>
+          <textarea id="pasteChatTextarea" rows="5" placeholder="Paste exported chat .txt content here..." class="w-full rounded-xl bg-[var(--background)] border border-[var(--border)] p-3 text-xs text-[var(--foreground)] font-mono focus:outline-none focus:border-emerald-500 select-text"></textarea>
           <div class="flex justify-between items-center mt-2">
             <span class="text-xs text-[var(--muted-foreground)]">Tip: You can also drag & drop any .zip or folder directly onto this window.</span>
             <button id="parsePastedBtn" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
@@ -681,6 +762,251 @@
     </div>
   </div>
 
+  <!-- ===================================================================
+       8. SETTINGS & CUSTOMIZATION MODAL (Theme, Fonts, Size, Density, Perspective, Tools)
+       =================================================================== -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Settings Header -->
+      <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Studio Settings &amp; Appearance</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">Customize themes, typography, perspective &amp; performance</p>
+          </div>
+        </div>
+        <button id="closeSettingsModalBtn" class="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Settings Body (Scrollable) -->
+      <div class="p-5 overflow-y-auto space-y-6">
+        <!-- 1. Theme Selection -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Chat Platform Theme</label>
+              <p class="text-xs text-[var(--muted-foreground)]">Choose visual styling, bubble geometry, and color accents</p>
+            </div>
+            <!-- Dark / Light mode toggle pill -->
+            <button id="themeModeToggleBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--background)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] transition">
+              <span id="themeModeIcon" class="flex items-center"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></span>
+              <span id="themeModeLabel">Dark</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <!-- WaChat Emerald -->
+            <button data-settings-theme="emerald" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-emerald-500/80 text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">WaChat Emerald</span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-600/30 text-emerald-300 font-mono">#005c4b</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Clean minimal</span>
+              </div>
+            </button>
+
+            <!-- TelePaper Sky -->
+            <button data-settings-theme="sky" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">TelePaper Sky</span>
+                <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-600/30 text-sky-300 font-mono">#2b5278</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Paper plane</span>
+              </div>
+            </button>
+
+            <!-- CordGuild Blurple -->
+            <button data-settings-theme="guild" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">CordGuild Blurple</span>
+                <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-600/30 text-indigo-300 font-mono">#5865f2</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Gamer feed</span>
+              </div>
+            </button>
+
+            <!-- iBubble Blue -->
+            <button data-settings-theme="bubble" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">iBubble Blue</span>
+                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-600/30 text-blue-300 font-mono">#0a84ff</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Glossy pill</span>
+              </div>
+            </button>
+
+            <!-- InstaGrad Social -->
+            <button data-settings-theme="gradient" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">InstaGrad Pink</span>
+                <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-600/30 text-pink-300 font-mono">Gradient</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Social DM</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 2. Typography Engine -->
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Typography &amp; Legibility</label>
+            <p class="text-xs text-[var(--muted-foreground)]">Curated high-readability font families and layout density</p>
+          </div>
+
+          <!-- Font Family Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <!-- Plus Jakarta Sans -->
+            <button data-font-key="jakarta" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-emerald-500/80 text-left transition" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Plus Jakarta</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Modern Geometric</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Inter -->
+            <button data-font-key="inter" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Inter', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Inter</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Clean Tech</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Outfit -->
+            <button data-font-key="outfit" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Outfit', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Outfit</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Friendly Round</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Lexend -->
+            <button data-font-key="lexend" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Lexend', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Lexend</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Reading Enhanced</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- System Default -->
+            <button data-font-key="system" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">System Native</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Segoe / Apple UI</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- JetBrains Mono -->
+            <button data-font-key="mono" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'JetBrains Mono', monospace;">
+              <div class="text-xs font-bold text-[var(--foreground)]">JetBrains Mono</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Developer Code</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+          </div>
+
+          <!-- Font Size Slider & Density Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+            <!-- Size Slider -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-[var(--foreground)]">Message Font Size</span>
+                <span id="fontSizeDisplay" class="text-xs font-mono font-bold text-[var(--accent)]">14px</span>
+              </div>
+              <input id="fontSizeSlider" type="range" min="13" max="17" step="1" value="14" class="w-full accent-emerald-500 cursor-pointer h-1.5 rounded-lg bg-[var(--panel)]" />
+              <div class="flex justify-between text-[10px] text-[var(--muted-foreground)] font-mono">
+                <span>13px Compact</span>
+                <span>14px Standard</span>
+                <span>15px</span>
+                <span>17px Large</span>
+              </div>
+            </div>
+
+            <!-- Bubble Spacing Density -->
+            <div class="space-y-1.5">
+              <span class="text-xs font-semibold text-[var(--foreground)] block">Bubble Spacing Density</span>
+              <div class="grid grid-cols-3 gap-1 bg-[var(--panel)] p-1 rounded-lg text-xs font-medium text-center">
+                <button data-density="compact" class="density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Compact</button>
+                <button data-density="standard" class="density-btn py-1 rounded bg-[var(--card)] text-[var(--foreground)] font-semibold shadow-sm transition">Normal</button>
+                <button data-density="relaxed" class="density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Spacious</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 3. Perspective / View-As -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Chat Perspective ("View as")</label>
+          <p class="text-xs text-[var(--muted-foreground)]">Select whose messages should appear on the right side in the outgoing accent bubble</p>
+          <div class="flex items-center gap-3">
+            <select id="settingsPerspectiveSelect" class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--accent)]">
+              <option value="">Auto-detected sender</option>
+            </select>
+            <button id="settingsPerspectiveResetBtn" class="px-3 py-2 rounded-xl bg-[var(--panel)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--border)] transition">
+              Auto Detect
+            </button>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 4. Developer & Diagnostics Tools -->
+        <div class="space-y-3">
+          <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Performance &amp; Diagnostic Tools</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button id="settingsGiantTestBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-amber-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-amber-400">âš¡ 25K Benchmark</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Stress-test 25k msgs across 3 yrs</div>
+              </div>
+              <span class="text-[10px] text-amber-500 font-mono mt-2">Run Giant Test â†’</span>
+            </button>
+
+            <button id="settingsResetDemoBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-emerald-400">â†º Reset Demo</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Restore rich interactive demo</div>
+              </div>
+              <span class="text-[10px] text-emerald-500 font-mono mt-2">Restore Sample â†’</span>
+            </button>
+
+            <button id="settingsAttachMediaBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-blue-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-blue-400">&#128206; Attach Media</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Link loose images or voice notes</div>
+              </div>
+              <span class="text-[10px] text-blue-500 font-mono mt-2">Select Files â†’</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Footer -->
+      <div class="px-5 py-3 border-t border-[var(--border)] bg-[var(--background)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+        <span class="font-mono">ChatVault Studio v2.1.0 &bull; Zero-Extract Engine</span>
+        <button id="doneSettingsModalBtn" class="px-4 py-1.5 rounded-xl bg-[var(--accent-strong)] hover:brightness-110 text-white font-semibold transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     /**********************************************************************
      * 1. STATE & NATIVE BRIDGE
@@ -692,7 +1018,7 @@
 
     const state = {
       sessionId: 1,
-      chatName: 'WhatsApp Chat Studio',
+      chatName: 'ChatVault Studio',
       messages: [],            // Parsed messages from native C# engine
       filteredMessages: [],    // Filtered view
       renderStart: 0,
@@ -707,7 +1033,7 @@
       activeFilter: 'all',
       activeDrawerTab: 'all_media',
       drawerSortChronological: true, // true = Oldest -> Newest chronological order
-      drawerRenderLimit: 180,
+      drawerRenderLimit: 60,
       drawerWide: false,
       searchQuery: '',
       searchHits: [],
@@ -753,7 +1079,7 @@
       document.getElementById('importModal').classList.add('hidden');
 
       const pct = Math.max(0, Math.min(100, Math.round(p.percent || 0)));
-      document.getElementById('progressTitle').textContent = p.title || 'Importing WhatsApp Archive...';
+      document.getElementById('progressTitle').textContent = p.title || 'Importing Chat Archive...';
       document.getElementById('progressPhase').textContent = p.phase || 'Processing...';
       document.getElementById('progressPercentText').textContent = `${pct}%`;
       document.getElementById('progressBarFill').style.width = `${pct}%`;
@@ -931,16 +1257,23 @@
     }
 
     function rebuildHeaderAndDropdowns(uniqueDates) {
-      const select = document.getElementById('viewAsSelect');
-      select.innerHTML = '';
-      for (const p of state.participants) {
-        const opt = document.createElement('option');
-        opt.value = p.name;
-        opt.textContent = p.name;
-        if (p.name === state.meSender) opt.selected = true;
-        select.appendChild(opt);
+      const mainSel = document.getElementById('mainPerspectiveSelect');
+      const settingsSel = document.getElementById('settingsPerspectiveSelect');
+      [mainSel, settingsSel].forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Auto Detect</option>';
+        for (const p of state.participants) {
+          const opt = document.createElement('option');
+          opt.value = p.name;
+          opt.textContent = `${p.name} (${p.count.toLocaleString()} msgs)`;
+          if (p.name === state.meSender) opt.selected = true;
+          sel.appendChild(opt);
+        }
+      });
+      const chatSub = document.getElementById('chatSubtitle');
+      if (chatSub) {
+        chatSub.textContent = `Viewing as: ${state.meSender || 'Auto-detected'} â€¢ ${state.participants.length} participants`;
       }
-
       const dateSelect = document.getElementById('dateJumpSelect');
       dateSelect.innerHTML = '<option value="">Jump to date...</option>';
       for (const d of uniqueDates) {
@@ -1013,7 +1346,7 @@
         m.attLinked && m.attFile && (m.attType === 'photo' || m.attType === 'sticker' || m.attType === 'video')
       );
 
-      state.drawerRenderLimit = 180;
+      state.drawerRenderLimit = 60;
 
       const total = state.filteredMessages.length;
       if (!preserveScroll) {
@@ -1138,11 +1471,11 @@
         } else if (msg.isJumboEmoji) {
           bodyHtml = `<div class="text-4xl py-1 leading-none">${escapeHtml(msg.text)}</div>`;
         } else if (msg.text) {
-          bodyHtml = `<div class="text-sm leading-relaxed break-words">${formatMessageHtml(msg.text, state.searchQuery)}</div>`;
+          bodyHtml = `<div class="msg-text leading-relaxed break-words">${formatMessageHtml(msg.text, state.searchQuery)}</div>`;
         }
 
         row.innerHTML = `
-          <div class="${bubbleClass} px-3 py-2 max-w-[85%] sm:max-w-[70%] md:max-w-[60%] shadow-sm relative">
+          <div class="${bubbleClass} bubble-inner max-w-[85%] sm:max-w-[70%] md:max-w-[60%] shadow-sm relative">
             ${senderHeaderHtml}
             ${attachmentHtml}
             ${bodyHtml}
@@ -1200,7 +1533,7 @@
           if (isStreamVideo) {
             return `
               <div class="mb-1.5 -mx-1 -mt-0.5 rounded-lg overflow-hidden bg-black/40 relative w-[290px] sm:w-[375px] max-w-full">
-                <video src="${url}" loop muted autoplay playsinline controls class="wa-viewable-video w-full min-h-[210px] max-h-96 object-contain rounded-lg bg-black/30"></video>
+                <video src="${url}" loop muted playsinline preload="metadata" controls class="wa-viewable-video w-full min-h-[210px] max-h-96 object-contain rounded-lg bg-black/30"></video>
                 <span class="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/65 text-emerald-400 text-xs font-bold pointer-events-none">${isGif ? 'GIF • ∞ LOOP' : '🎬 ∞ LOOP'}</span>
                 <button data-lightbox-id="${msg.id}" class="absolute top-2 right-2 px-2.5 py-1 rounded bg-black/75 hover:bg-emerald-600 text-white text-xs font-semibold shadow transition">⛶ Full View</button>
               </div>`;
@@ -1274,67 +1607,112 @@
       return lower.endsWith('.gif') || lower.includes('-gif-') || lower.includes('gif');
     }
 
-    // IntersectionObserver that guarantees all GIFs, videos, and stickers loop infinitely while in the viewable area
-    const viewableMediaObserver = ('IntersectionObserver' in window)
-      ? new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            const el = entry.target;
-            if (el.tagName === 'VIDEO') {
-              el.loop = true;
-              if (entry.isIntersecting) {
-                if (el.paused && !el.dataset.userPaused) {
-                  el.play().catch(() => {
-                    el.muted = true;
-                    el.play().catch(() => {});
-                  });
-                }
-              } else {
-                if (!el.paused) {
-                  el.pause();
-                }
-              }
-            } else if (el.tagName === 'IMG') {
-              if (entry.isIntersecting) {
-                el.decoding = 'sync';
-                el.loading = 'eager';
-                el.dataset.inView = 'true';
-              } else {
-                el.dataset.inView = 'false';
-              }
-            }
-          });
-        }, { threshold: 0.05 })
-      : null;
+    // =========================================================================
+    // HIGH-PERFORMANCE MEDIA ENGINE: MAX 2 CONCURRENT PLAYING VIDEOS + SCOPED OBSERVERS
+    // =========================================================================
+    const activePlayingVideos = new Set();
+    const MAX_CONCURRENT_VIDEOS = 2;
 
-    function observeViewableMedia(container) {
+    function playMediaVideo(vid) {
+      if (!vid || vid.dataset.userPaused) return;
+      if (activePlayingVideos.has(vid) && !vid.paused) return;
+
+      while (activePlayingVideos.size >= MAX_CONCURRENT_VIDEOS) {
+        const oldest = activePlayingVideos.values().next().value;
+        if (oldest) {
+          try { oldest.pause(); } catch (e) {}
+          activePlayingVideos.delete(oldest);
+        }
+      }
+
+      vid.muted = true;
+      vid.play().then(() => {
+        activePlayingVideos.add(vid);
+      }).catch(() => {});
+    }
+
+    function pauseMediaVideo(vid) {
+      if (!vid) return;
+      try { vid.pause(); } catch (e) {}
+      activePlayingVideos.delete(vid);
+    }
+
+    function pauseAllDrawerVideos() {
+      const drawerEl = document.getElementById('drawerContent');
+      if (drawerEl) {
+        drawerEl.querySelectorAll('video').forEach(v => pauseMediaVideo(v));
+      }
+    }
+
+    let drawerObserver = null;
+    let chatObserver = null;
+
+    function getDrawerObserver() {
+      if (drawerObserver) return drawerObserver;
+      const root = document.getElementById('drawerContent');
+      if (!root || !('IntersectionObserver' in window)) return null;
+
+      drawerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (el.tagName === 'VIDEO') {
+            if (entry.isIntersecting) {
+              playMediaVideo(el);
+            } else {
+              pauseMediaVideo(el);
+            }
+          }
+        });
+      }, {
+        root: root,
+        threshold: 0.25
+      });
+      return drawerObserver;
+    }
+
+    function getChatObserver() {
+      if (chatObserver) return chatObserver;
+      const root = document.getElementById('chatScroll');
+      if (!root || !('IntersectionObserver' in window)) return null;
+
+      chatObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (el.tagName === 'VIDEO') {
+            if (entry.isIntersecting) {
+              playMediaVideo(el);
+            } else {
+              pauseMediaVideo(el);
+            }
+          }
+        });
+      }, {
+        root: root,
+        threshold: 0.25
+      });
+      return chatObserver;
+    }
+
+    function observeViewableMedia(container, isDrawer = false) {
       if (!container) return;
+      const observer = isDrawer ? getDrawerObserver() : getChatObserver();
+
       container.querySelectorAll('video.wa-viewable-video').forEach(vid => {
         vid.loop = true;
         vid.playsInline = true;
+        vid.preload = 'metadata';
         if (!vid.dataset.loopBound) {
           vid.dataset.loopBound = '1';
-          // Belt-and-suspenders infinite loop enforcement
           vid.addEventListener('ended', () => {
             vid.currentTime = 0;
-            vid.play().catch(() => {});
+            playMediaVideo(vid);
           });
         }
-        if (viewableMediaObserver) {
-          viewableMediaObserver.observe(vid);
-        } else {
-          vid.play().catch(() => {});
-        }
-      });
-
-      container.querySelectorAll('img.wa-loop-img').forEach(img => {
-        img.decoding = 'sync';
-        img.loading = 'eager';
-        if (viewableMediaObserver) {
-          viewableMediaObserver.observe(img);
+        if (observer) {
+          observer.observe(vid);
         }
       });
     }
-
     function bindMediaEvents(container) {
       observeViewableMedia(container);
 
@@ -1544,7 +1922,7 @@
 
         if (isStreamVideo) {
           cell.innerHTML = `
-            <video src="${url}" loop muted autoplay playsinline class="wa-viewable-video w-full h-full object-contain bg-black/40"></video>
+            <video src="${url}" loop muted playsinline preload="metadata" class="wa-viewable-video w-full h-full object-contain bg-black/40"></video>
             <span class="absolute top-2 left-2 text-[12px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-emerald-400 pointer-events-none shadow">${labelText}</span>
             <div class="absolute top-2 right-2 flex items-center gap-1.5">
               <button class="mute-toggle-btn px-2 py-0.5 rounded-md bg-black/70 hover:bg-black/90 text-white text-[12px] font-semibold shadow transition" title="Toggle audio">🔇</button>
@@ -1558,7 +1936,7 @@
           `;
         } else {
           cell.innerHTML = `
-            <img src="${url}" decoding="sync" loading="eager" class="wa-loop-img w-full h-full object-contain bg-black/40 group-hover:scale-[1.01] transition duration-200" />
+            <img src="${url}" loading="lazy" decoding="async" class="wa-loop-img w-full h-full object-contain bg-black/40 group-hover:scale-[1.01] transition duration-200" />
             <span class="absolute top-2 left-2 text-[12px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-emerald-400 pointer-events-none shadow">${labelText}</span>
             <div class="absolute top-2 right-2 flex items-center gap-1.5">
               <button class="expand-lb-btn px-2 py-0.5 rounded-md bg-emerald-600/90 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Open large theater player">⛶ Full View</button>
@@ -1596,7 +1974,7 @@
 
       if (url && isSticker) {
         cell.innerHTML = `
-          <img src="${url}" decoding="sync" loading="eager" class="w-4/5 h-4/5 object-contain wa-sticker-img wa-loop-img" />
+          <img src="${url}" loading="lazy" decoding="async" class="w-4/5 h-4/5 object-contain wa-sticker-img wa-loop-img" />
           <span class="absolute top-1 left-1 text-[12px] px-1 rounded bg-black/50 text-white/90 pointer-events-none">${badgeIcon}</span>
           <button class="jump-msg-btn opacity-0 group-hover:opacity-100 absolute top-1 right-1 px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Jump to message in chat">↗</button>
           <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-1.5 py-1 flex items-center justify-between text-[12px] text-white/90 pointer-events-none">
@@ -1663,7 +2041,7 @@
       `;
       box.appendChild(summaryBar);
 
-      const gridColsClass = state.drawerWide ? 'grid grid-cols-4 gap-2' : 'grid grid-cols-3 gap-2';
+      const gridColsClass = state.drawerWide ? 'grid grid-cols-4 gap-2 grid-flow-row-dense' : 'grid grid-cols-3 gap-2 grid-flow-row-dense';
 
       dateGroups.forEach(group => {
         const section = document.createElement('div');
@@ -1696,18 +2074,19 @@
       if (totalItems > state.drawerRenderLimit) {
         const moreBtn = document.createElement('button');
         moreBtn.className = 'w-full py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 text-xs font-bold transition';
-        moreBtn.textContent = `Load next ${Math.min(180, totalItems - state.drawerRenderLimit)} items (${(totalItems - state.drawerRenderLimit).toLocaleString()} remaining)...`;
+        moreBtn.textContent = `Load next ${Math.min(60, totalItems - state.drawerRenderLimit)} items (${(totalItems - state.drawerRenderLimit).toLocaleString()} remaining)...`;
         moreBtn.addEventListener('click', () => {
-          state.drawerRenderLimit += 180;
+          state.drawerRenderLimit += 60;
           renderDrawer(true);
         });
         box.appendChild(moreBtn);
       }
 
-      observeViewableMedia(box);
+      observeViewableMedia(box, true);
     }
 
     function renderDrawer(preserveDrawerScroll = false) {
+      pauseAllDrawerVideos();
       const box = document.getElementById('drawerContent');
       const prevScroll = preserveDrawerScroll ? box.scrollTop : 0;
       box.innerHTML = '';
@@ -1815,7 +2194,10 @@
             <div class="flex justify-between text-xs text-[var(--muted-foreground)]"><span>${p.words.toLocaleString()} words</span><span>${p.mediaCount.toLocaleString()} media</span></div>`;
           card.addEventListener('click', () => {
             state.meSender = p.name;
-            document.getElementById('viewAsSelect').value = p.name;
+            const pSel = document.getElementById('settingsPerspectiveSelect');
+            if (pSel) pSel.value = p.name;
+            const chatSub = document.getElementById('chatSubtitle');
+            if (chatSub) chatSub.textContent = `Viewing as: ${p.name} â€¢ ${state.participants.length} participants`;
             renderVisibleWindow();
             renderDrawer();
           });
@@ -2045,29 +2427,235 @@
       });
     }
 
+    /**********************************************************************
+     * 7. CUSTOMIZATION & SETTINGS ENGINE (Themes, Fonts, Size, Density)
+     **********************************************************************/
+    const FONT_MAP = {
+      jakarta: "'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      inter: "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      outfit: "'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      lexend: "'Lexend', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      system: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    };
+
     function applyAppTheme(themeName) {
-      const valid = ['whatsapp', 'telegram', 'discord', 'imessage', 'instagram'];
-      const chosen = valid.includes(themeName) ? themeName : 'whatsapp';
-      document.documentElement.setAttribute('data-app-theme', chosen);
-      const sel = document.getElementById('appThemeSelect');
-      if (sel && sel.value !== chosen) {
-        sel.value = chosen;
-      }
+      const valid = ['emerald', 'sky', 'guild', 'bubble', 'gradient'];
+      const map = {
+        'whatsapp': 'emerald',
+        'telegram': 'sky',
+        'discord': 'guild',
+        'imessage': 'bubble',
+        'instagram': 'gradient'
+      };
+      const target = map[themeName] || (valid.includes(themeName) ? themeName : 'emerald');
+      document.documentElement.setAttribute('data-app-theme', target);
+
+      document.querySelectorAll('[data-settings-theme]').forEach(card => {
+        const isSelected = card.dataset.settingsTheme === target;
+        card.classList.toggle('border-emerald-500/80', isSelected);
+        card.classList.toggle('border-transparent', !isSelected);
+        card.classList.toggle('bg-[var(--card)]', isSelected);
+      });
+      localStorage.setItem('chatvault_theme', target);
     }
 
-    document.getElementById('appThemeSelect').addEventListener('change', (e) => {
-      applyAppTheme(e.target.value);
+    function applyAppFont(fontKey) {
+      const chosenKey = FONT_MAP[fontKey] ? fontKey : 'jakarta';
+      document.documentElement.style.setProperty('--app-font-family', FONT_MAP[chosenKey]);
+
+      document.querySelectorAll('[data-font-key]').forEach(card => {
+        const isSelected = card.dataset.fontKey === chosenKey;
+        card.classList.toggle('border-emerald-500/80', isSelected);
+        card.classList.toggle('border-transparent', !isSelected);
+        card.classList.toggle('bg-[var(--card)]', isSelected);
+      });
+      localStorage.setItem('chatvault_font', chosenKey);
+    }
+
+    function applyAppFontSize(px) {
+      const size = Math.max(13, Math.min(17, parseInt(px, 10) || 14));
+      document.documentElement.style.setProperty('--chat-font-size', `${size}px`);
+      const slider = document.getElementById('fontSizeSlider');
+      if (slider) slider.value = size;
+      const disp = document.getElementById('fontSizeDisplay');
+      if (disp) disp.textContent = `${size}px`;
+      localStorage.setItem('chatvault_font_size', size);
+    }
+
+    function applyBubbleDensity(density) {
+      const densities = {
+        compact: { y: '5px', x: '8px' },
+        standard: { y: '7px', x: '10px' },
+        relaxed: { y: '10px', x: '14px' }
+      };
+      const d = densities[density] || densities.standard;
+      const key = densities[density] ? density : 'standard';
+      document.documentElement.style.setProperty('--bubble-padding-y', d.y);
+      document.documentElement.style.setProperty('--bubble-padding-x', d.x);
+
+      document.querySelectorAll('.density-btn').forEach(btn => {
+        const isSelected = btn.dataset.density === key;
+        btn.className = isSelected
+          ? 'density-btn py-1 rounded bg-[var(--card)] text-[var(--foreground)] font-semibold shadow-sm transition'
+          : 'density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      });
+      localStorage.setItem('chatvault_density', key);
+    }
+
+    const MOON_SVG = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    const SUN_SVG = '<svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+
+    function toggleThemeMode() {
+      const isLight = document.documentElement.classList.toggle('light');
+      document.documentElement.classList.toggle('dark', !isLight);
+      const icon = document.getElementById('themeModeIcon');
+      const label = document.getElementById('themeModeLabel');
+      if (icon) icon.innerHTML = isLight ? SUN_SVG : MOON_SVG;
+      if (label) label.textContent = isLight ? 'Light' : 'Dark';
+      localStorage.setItem('chatvault_mode', isLight ? 'light' : 'dark');
+    }
+
+    function initSettingsFromStorage() {
+      const savedTheme = localStorage.getItem('chatvault_theme') || 'emerald';
+      applyAppTheme(savedTheme);
+
+      const savedMode = localStorage.getItem('chatvault_mode') || 'dark';
+      if (savedMode === 'light') {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      }
+      const icon = document.getElementById('themeModeIcon');
+      const label = document.getElementById('themeModeLabel');
+      if (icon) icon.innerHTML = savedMode === "light" ? SUN_SVG : MOON_SVG;
+      if (label) label.textContent = savedMode === 'light' ? 'Light' : 'Dark';
+
+      const savedFont = localStorage.getItem('chatvault_font') || 'jakarta';
+      applyAppFont(savedFont);
+
+      const savedSize = localStorage.getItem('chatvault_font_size') || 14;
+      applyAppFontSize(savedSize);
+
+      const savedDensity = localStorage.getItem('chatvault_density') || 'standard';
+      applyBubbleDensity(savedDensity);
+    }
+
+    // Settings Modal Triggers
+    const settingsModal = document.getElementById('settingsModal');
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const doneSettingsModalBtn = document.getElementById('doneSettingsModalBtn');
+
+    if (openSettingsBtn) openSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    if (closeSettingsModalBtn) closeSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+    if (doneSettingsModalBtn) doneSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+    const chatSubtitleBtn = document.getElementById('chatSubtitle');
+    if (chatSubtitleBtn) {
+      chatSubtitleBtn.addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+        const pSel = document.getElementById('settingsPerspectiveSelect');
+        if (pSel) pSel.focus();
+      });
+    }
+
+    // Theme Mode Toggle inside Settings
+    const themeModeToggleBtn = document.getElementById('themeModeToggleBtn');
+    if (themeModeToggleBtn) themeModeToggleBtn.addEventListener('click', toggleThemeMode);
+
+    // Theme Cards
+    document.querySelectorAll('[data-settings-theme]').forEach(card => {
+      card.addEventListener('click', () => applyAppTheme(card.dataset.settingsTheme));
     });
 
-    document.getElementById('themeToggleBtn').addEventListener('click', () => {
-      document.documentElement.classList.toggle('light');
+    // Font Cards
+    document.querySelectorAll('[data-font-key]').forEach(card => {
+      card.addEventListener('click', () => applyAppFont(card.dataset.fontKey));
     });
 
-    document.getElementById('viewAsSelect').addEventListener('change', (e) => {
-      state.meSender = e.target.value;
+    // Font Size Slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    if (fontSizeSlider) {
+      fontSizeSlider.addEventListener('input', (e) => applyAppFontSize(e.target.value));
+    }
+
+    // Bubble Density Buttons
+    document.querySelectorAll('.density-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyBubbleDensity(btn.dataset.density));
+    });
+
+    // Perspective Selector inside Settings
+    function setPerspectiveSender(name) {
+      state.meSender = name;
+      const mainSel = document.getElementById('mainPerspectiveSelect');
+      const settingsSel = document.getElementById('settingsPerspectiveSelect');
+      if (mainSel && mainSel.value !== name) mainSel.value = name;
+      if (settingsSel && settingsSel.value !== name) settingsSel.value = name;
+      const chatSub = document.getElementById('chatSubtitle');
+      if (chatSub) chatSub.textContent = `Viewing as: ${name || 'Auto-detected'} â€¢ ${state.participants.length} participants`;
       renderVisibleWindow();
       renderDrawer();
-    });
+    }
+
+    const mainPerspectiveSelect = document.getElementById('mainPerspectiveSelect');
+    if (mainPerspectiveSelect) {
+      mainPerspectiveSelect.addEventListener('change', (e) => setPerspectiveSender(e.target.value));
+    }
+
+    const settingsPerspectiveSelect = document.getElementById('settingsPerspectiveSelect');
+    if (settingsPerspectiveSelect) {
+      settingsPerspectiveSelect.addEventListener('change', (e) => setPerspectiveSender(e.target.value));
+    }
+
+    const settingsPerspectiveResetBtn = document.getElementById('settingsPerspectiveResetBtn');
+    if (settingsPerspectiveResetBtn) {
+      settingsPerspectiveResetBtn.addEventListener('click', () => {
+        if (state.participants.length > 0) {
+          setPerspectiveSender(state.participants[0].name);
+        }
+      });
+    }
+    const settingsGiantTestBtn = document.getElementById('settingsGiantTestBtn');
+    if (settingsGiantTestBtn) {
+      settingsGiantTestBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('load_giant_demo');
+      });
+    }
+
+    const settingsResetDemoBtn = document.getElementById('settingsResetDemoBtn');
+    if (settingsResetDemoBtn) {
+      settingsResetDemoBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('load_demo');
+      });
+    }
+
+    const settingsAttachMediaBtn = document.getElementById('settingsAttachMediaBtn');
+    if (settingsAttachMediaBtn) {
+      settingsAttachMediaBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('open_files');
+      });
+    }
+
+    // More Filters Dropdown in Header
+    const moreFiltersBtn = document.getElementById('moreFiltersBtn');
+    const moreFiltersMenu = document.getElementById('moreFiltersMenu');
+    if (moreFiltersBtn && moreFiltersMenu) {
+      moreFiltersBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        moreFiltersMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!moreFiltersMenu.contains(e.target) && e.target !== moreFiltersBtn) {
+          moreFiltersMenu.classList.add('hidden');
+        }
+      });
+    }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2080,7 +2668,7 @@
     document.querySelectorAll('.drawer-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         state.activeDrawerTab = tab.dataset.tab;
-        state.drawerRenderLimit = 180;
+        state.drawerRenderLimit = 60;
         document.querySelectorAll('.drawer-tab').forEach(t => {
           const active = t.dataset.tab === state.activeDrawerTab;
           t.className = active
@@ -2117,7 +2705,7 @@
       if (dist < 140) {
         const totalPossible = state.messages.filter(m => m.attType).length;
         if (state.drawerRenderLimit < totalPossible) {
-          state.drawerRenderLimit += 150;
+          state.drawerRenderLimit += 60;
           renderDrawer(true);
         }
       }
@@ -2173,9 +2761,9 @@
     document.getElementById('nativeOpenZipBtn').addEventListener('click', () => sendHostCommand('open_zip'));
     document.getElementById('nativeOpenFolderBtn').addEventListener('click', () => sendHostCommand('open_folder'));
     document.getElementById('nativeOpenFilesBtn').addEventListener('click', () => sendHostCommand('open_files'));
-    document.getElementById('nativeAddMediaBtn').addEventListener('click', () => sendHostCommand('open_files'));
-    document.getElementById('resetDemoBtn').addEventListener('click', () => sendHostCommand('load_demo'));
-    document.getElementById('giantStressTestBtn').addEventListener('click', () => sendHostCommand('load_giant_demo'));
+    // nativeAddMediaBtn moved to Settings
+    // resetDemoBtn moved to Settings
+    // giantStressTestBtn moved to Settings
     document.getElementById('modalGiantTestBtn').addEventListener('click', () => sendHostCommand('load_giant_demo'));
 
     document.getElementById('parsePastedBtn').addEventListener('click', () => {
@@ -2243,16 +2831,30 @@
         if (e.key === 'ArrowRight') document.getElementById('lightboxNextBtn').click();
         return;
       }
-      if (e.key === 'Escape') importModal.classList.add('hidden');
+      if (e.key === 'Escape') {
+        if (settingsModal && !settingsModal.classList.contains('hidden')) {
+          settingsModal.classList.add('hidden');
+          return;
+        }
+        if (importModal && !importModal.classList.contains('hidden')) {
+          importModal.classList.add('hidden');
+          return;
+        }
+      }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
         e.preventDefault();
         searchBar.classList.remove('hidden');
         searchInput.focus();
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+        e.preventDefault();
+        if (settingsModal) settingsModal.classList.toggle('hidden');
+      }
     });
 
     // Request initial Demo Chat from Native Host on boot
     window.addEventListener('DOMContentLoaded', () => {
+      initSettingsFromStorage();
       sendHostCommand('app_ready');
     });
   </script>
