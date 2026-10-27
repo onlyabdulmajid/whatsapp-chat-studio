@@ -1,0 +1,3216 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatVault Studio — Portable Chat Archive Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lexend:wght@400;500;600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="/tailwind.js"></script>
+  <style>
+        :root {
+      --app-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --chat-font-size: 14px;
+      --bubble-padding-y: 7px;
+      --bubble-padding-x: 10px;
+      --accent: #10b981;
+      --accent-strong: #059669;
+      --accent-soft: rgba(16, 185, 129, 0.15);
+      --accent-border: rgba(16, 185, 129, 0.3);
+    }
+    :root, html[data-app-theme="emerald"] {
+      --accent: #10b981;
+      --accent-strong: #059669;
+      --accent-soft: rgba(16, 185, 129, 0.15);
+      --accent-border: rgba(16, 185, 129, 0.3);
+      --background: #0b141a;
+      --card: #111b21;
+      --panel: #202c33;
+      --border: #222e35;
+      --foreground: #e9edef;
+      --muted-foreground: #8696a0;
+      --bubble-out-bg: #005c4b;
+      --bubble-out-gradient: none;
+      --bubble-out-text: #e9edef;
+      --bubble-out-border: rgba(16, 185, 129, 0.28);
+      --bubble-in-bg: #202c33;
+      --bubble-in-border: #2a3942;
+      --bubble-out-radius: 12px 2px 12px 12px;
+      --bubble-in-radius: 2px 12px 12px 12px;
+      --bubble-cont-radius: 12px;
+    }
+    html.light[data-app-theme="emerald"], html.light {
+      --accent: #059669;
+      --accent-strong: #047857;
+      --accent-soft: rgba(5, 150, 105, 0.15);
+      --accent-border: rgba(5, 150, 105, 0.3);
+      --background: #efeae2;
+      --card: #f0f2f5;
+      --panel: #ffffff;
+      --border: #d1d7db;
+      --foreground: #111b21;
+      --muted-foreground: #667781;
+      --bubble-out-bg: #d9fdd3;
+      --bubble-out-gradient: none;
+      --bubble-out-text: #111b21;
+      --bubble-out-border: #b8e9b0;
+      --bubble-in-bg: #ffffff;
+      --bubble-in-border: #e2e8f0;
+    }
+
+    /* 🔵 SKY (paper-plane style) THEME */
+    html[data-app-theme="sky"] {
+      --accent: #38bdf8;
+      --accent-strong: #0284c7;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --accent-border: rgba(56, 189, 248, 0.3);
+      --background: #0e1621;
+      --card: #17212b;
+      --panel: #242f3d;
+      --border: #202b36;
+      --foreground: #f5f5f5;
+      --muted-foreground: #7f91a4;
+      --bubble-out-bg: #2b5278;
+      --bubble-out-gradient: linear-gradient(135deg, #2b5278 0%, #1e3c5a 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: rgba(106, 178, 242, 0.25);
+      --bubble-in-bg: #182533;
+      --bubble-in-border: #223346;
+      --bubble-out-radius: 15px 15px 3px 15px;
+      --bubble-in-radius: 15px 15px 15px 3px;
+      --bubble-cont-radius: 15px;
+    }
+    html.light[data-app-theme="sky"] {
+      --accent: #0284c7;
+      --accent-strong: #0369a1;
+      --accent-soft: rgba(2, 132, 199, 0.15);
+      --accent-border: rgba(2, 132, 199, 0.3);
+      --background: #d6e4c6;
+      --card: #ffffff;
+      --panel: #f4f4f5;
+      --border: #dfe1e5;
+      --foreground: #000000;
+      --muted-foreground: #707579;
+      --bubble-out-bg: #effdde;
+      --bubble-out-gradient: none;
+      --bubble-out-text: #000000;
+      --bubble-out-border: #c5e8a6;
+      --bubble-in-bg: #ffffff;
+      --bubble-in-border: #d9dce0;
+    }
+
+    /* 🟣 GUILD (blurple gaming-chat style) THEME */
+    html[data-app-theme="guild"] {
+      --accent: #818cf8;
+      --accent-strong: #5865f2;
+      --accent-soft: rgba(88, 101, 242, 0.15);
+      --accent-border: rgba(88, 101, 242, 0.3);
+      --background: #313338;
+      --card: #2b2d31;
+      --panel: #1e1f22;
+      --border: #3f4147;
+      --foreground: #f2f3f5;
+      --muted-foreground: #949ba4;
+      --bubble-out-bg: #5865f2;
+      --bubble-out-gradient: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: rgba(88, 101, 242, 0.45);
+      --bubble-in-bg: #232428;
+      --bubble-in-border: #383a40;
+      --bubble-out-radius: 8px;
+      --bubble-in-radius: 8px;
+      --bubble-cont-radius: 8px;
+    }
+    html.light[data-app-theme="guild"] {
+      --accent: #5865f2;
+      --accent-strong: #4752c4;
+      --accent-soft: rgba(88, 101, 242, 0.15);
+      --accent-border: rgba(88, 101, 242, 0.3);
+      --background: #ffffff;
+      --card: #f2f3f5;
+      --panel: #e3e5e8;
+      --border: #d4d7dc;
+      --foreground: #060607;
+      --muted-foreground: #5c5e66;
+      --bubble-out-bg: #5865f2;
+      --bubble-out-gradient: none;
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: #4752c4;
+      --bubble-in-bg: #f2f3f5;
+      --bubble-in-border: #e3e5e8;
+    }
+
+    /* 🫧 BUBBLE (glossy blue pill style) THEME */
+    html[data-app-theme="bubble"] {
+      --accent: #38bdf8;
+      --accent-strong: #0a84ff;
+      --accent-soft: rgba(10, 132, 255, 0.15);
+      --accent-border: rgba(10, 132, 255, 0.3);
+      --background: #000000;
+      --card: #1c1c1e;
+      --panel: #2c2c2e;
+      --border: #2c2c2e;
+      --foreground: #ffffff;
+      --muted-foreground: #8e8e93;
+      --bubble-out-bg: #0a84ff;
+      --bubble-out-gradient: linear-gradient(180deg, #1b8fff 0%, #0070e0 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: rgba(10, 132, 255, 0.4);
+      --bubble-in-bg: #26262a;
+      --bubble-in-border: #36363b;
+      --bubble-out-radius: 20px 20px 4px 20px;
+      --bubble-in-radius: 20px 20px 20px 4px;
+      --bubble-cont-radius: 20px;
+    }
+    html.light[data-app-theme="bubble"] {
+      --accent: #007aff;
+      --accent-strong: #0062cc;
+      --accent-soft: rgba(0, 122, 255, 0.15);
+      --accent-border: rgba(0, 122, 255, 0.3);
+      --background: #ffffff;
+      --card: #f2f2f7;
+      --panel: #e5e5ea;
+      --border: #d1d1d6;
+      --foreground: #000000;
+      --muted-foreground: #6c6c70;
+      --bubble-out-bg: #007aff;
+      --bubble-out-gradient: linear-gradient(180deg, #1a88ff 0%, #006ee6 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: #0062cc;
+      --bubble-in-bg: #e9e9eb;
+      --bubble-in-border: #dcdce0;
+    }
+
+    /* 🩷 GRADIENT (social DM style) THEME */
+    html[data-app-theme="gradient"] {
+      --accent: #ec4899;
+      --accent-strong: #a855f7;
+      --accent-soft: rgba(236, 72, 153, 0.15);
+      --accent-border: rgba(236, 72, 153, 0.3);
+      --background: #09090d;
+      --card: #121218;
+      --panel: #1f1f29;
+      --border: #262633;
+      --foreground: #fafafa;
+      --muted-foreground: #a1a1aa;
+      --bubble-out-bg: #9333ea;
+      --bubble-out-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: rgba(236, 72, 153, 0.35);
+      --bubble-in-bg: #26262e;
+      --bubble-in-border: #363642;
+      --bubble-out-radius: 20px 20px 5px 20px;
+      --bubble-in-radius: 20px 20px 20px 5px;
+      --bubble-cont-radius: 20px;
+    }
+    html.light[data-app-theme="gradient"] {
+      --accent: #a855f7;
+      --accent-strong: #9333ea;
+      --accent-soft: rgba(168, 85, 247, 0.15);
+      --accent-border: rgba(168, 85, 247, 0.3);
+      --background: #ffffff;
+      --card: #fafafa;
+      --panel: #f4f4f5;
+      --border: #e4e4e7;
+      --foreground: #09090b;
+      --muted-foreground: #71717a;
+      --bubble-out-bg: #9333ea;
+      --bubble-out-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --bubble-out-text: #ffffff;
+      --bubble-out-border: rgba(168, 85, 247, 0.35);
+      --bubble-in-bg: #efefef;
+      --bubble-in-border: #e4e4e7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: var(--background);
+      color: var(--foreground);
+            font-family: var(--app-font-family);
+      font-size: var(--chat-font-size);
+    }
+
+    .wa-wallpaper {
+      background-color: var(--background);
+      background-image: radial-gradient(rgba(128, 128, 128, 0.10) 1px, transparent 1px),
+                        radial-gradient(rgba(128, 128, 128, 0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
+    }
+
+    .wa-bubble-out {
+      background-color: var(--bubble-out-bg);
+      background-image: var(--bubble-out-gradient, none);
+      border: 1px solid var(--bubble-out-border);
+      color: var(--bubble-out-text, var(--foreground));
+      border-radius: var(--bubble-out-radius, 12px 2px 12px 12px);
+      contain: content;
+    }
+    .wa-bubble-in {
+      background-color: var(--bubble-in-bg);
+      border: 1px solid var(--bubble-in-border);
+      color: var(--foreground);
+      border-radius: var(--bubble-in-radius, 2px 12px 12px 12px);
+      contain: content;
+    }
+    .wa-bubble-out-cont {
+      background-color: var(--bubble-out-bg);
+      background-image: var(--bubble-out-gradient, none);
+      border: 1px solid var(--bubble-out-border);
+      color: var(--bubble-out-text, var(--foreground));
+      border-radius: var(--bubble-cont-radius, 12px);
+      contain: content;
+    }
+    .wa-bubble-in-cont {
+      background-color: var(--bubble-in-bg);
+      border: 1px solid var(--bubble-in-border);
+      color: var(--foreground);
+      border-radius: var(--bubble-cont-radius, 12px);
+      contain: content;
+    }
+
+    @keyframes msgHighlight {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.85); transform: scale(1.01); }
+      50% { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0.25); transform: scale(1.01); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+    }
+    .msg-jump-highlight {
+      animation: msgHighlight 1.4s ease-out;
+    }
+
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(134, 150, 160, 0.32);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(134, 150, 160, 0.55);
+    }
+
+    /* Traditional Native Windows-style Scrollbar on Chat History */
+    #chatScroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(134, 150, 160, 0.45) transparent;
+    }
+    #chatScroll::-webkit-scrollbar {
+      width: 9px;
+    }
+    #chatScroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #chatScroll::-webkit-scrollbar-thumb {
+      background: rgba(134, 150, 160, 0.4);
+      border-radius: 6px;
+    }
+    #chatScroll::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+
+    .wa-sticker-img {
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
+    }
+    .wa-sticker-img:hover {
+      transform: scale(1.06) rotate(-1deg);
+    }
+
+    mark.wa-search-hit {
+      background-color: rgba(250, 204, 21, 0.45);
+      color: var(--foreground);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    /* Shimmer effect for progress bar */
+    @keyframes progressShine {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .progress-bar-animated {
+      background: linear-gradient(90deg, #059669 0%, #10b981 45%, #34d399 50%, #10b981 55%, #059669 100%);
+      background-size: 200% 100%;
+      animation: progressShine 1.8s infinite linear;
+      transition: width 0.18s ease-out;
+    }
+    .bubble-inner {
+      padding: var(--bubble-padding-y) var(--bubble-padding-x);
+    }
+    .msg-text {
+      font-size: var(--chat-font-size);
+    }
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      color: var(--muted-foreground);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .icon-btn:hover {
+      background-color: var(--panel);
+      color: var(--foreground);
+    }
+    .filter-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      color: var(--muted-foreground);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .filter-btn:hover {
+      color: var(--foreground);
+    }
+    .filter-btn.active {
+      background-color: var(--card);
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .filter-btn[data-variant="menu"] {
+      width: 100%;
+      text-align: left;
+      padding: 6px 10px;
+    }
+    .filter-btn[data-variant="menu"]:hover {
+      background-color: var(--panel);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased select-none h-full flex flex-col">
+
+  <!-- ===================================================================
+       1. REAL-TIME MULTI-STAGE IMPORT PROGRESS OVERLAY
+       =================================================================== -->
+  <div id="progressModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-md flex items-center justify-center p-6">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+            <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+              <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 id="progressTitle" class="text-sm font-bold text-[var(--foreground)]">Importing Chat Archive...</h3>
+            <p id="progressPhase" class="text-xs text-emerald-400 font-medium">Initializing multi-threaded engine</p>
+          </div>
+        </div>
+        <span id="progressPercentText" class="text-lg font-extrabold text-emerald-400 font-mono">0%</span>
+      </div>
+
+      <!-- Progress Bar Track -->
+      <div class="w-full h-3 rounded-full bg-black/40 border border-[var(--border)] overflow-hidden p-0.5">
+        <div id="progressBarFill" class="h-full rounded-full progress-bar-animated" style="width: 0%"></div>
+      </div>
+
+      <!-- 4-Step Pipeline Pill Indicators -->
+      <div class="grid grid-cols-4 gap-1.5 text-center">
+        <div id="stepIndicator1" class="py-1.5 px-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-[var(--muted-foreground)]">
+          1. Index
+        </div>
+        <div id="stepIndicator2" class="py-1.5 px-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-[var(--muted-foreground)]">
+          2. RAM Cache
+        </div>
+        <div id="stepIndicator3" class="py-1.5 px-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-[var(--muted-foreground)]">
+          3. Parse Log
+        </div>
+        <div id="stepIndicator4" class="py-1.5 px-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-[var(--muted-foreground)]">
+          4. GPU Ready
+        </div>
+      </div>
+
+      <!-- Live Telemetry Detail -->
+      <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 flex items-center justify-between text-xs">
+        <span id="progressDetailText" class="text-[var(--muted-foreground)] truncate pr-2">Preparing archive stream...</span>
+        <span id="progressTelemetryBadge" class="font-mono text-emerald-400 shrink-0"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       2. DRAG & DROP OVERLAY
+       =================================================================== -->
+  <div id="dropOverlay" class="fixed inset-0 z-40 hidden bg-black/65 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="bg-[var(--card)] border-2 border-dashed border-emerald-500 rounded-2xl p-10 max-w-lg w-full text-center shadow-2xl pointer-events-none">
+      <div class="w-16 h-16 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-[var(--foreground)] mb-1">Drop a Chat Archive, Folder or Log Files</h3>
+      <p class="text-sm text-[var(--muted-foreground)]">
+        Native zero-copy path detection for <span class="font-semibold text-emerald-400">.zip</span> archives, folders, or <span class="font-semibold text-emerald-400">.txt + media files</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       3. TOP APP HEADER
+       =================================================================== -->
+  <header class="app-header bg-[var(--card)] border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between gap-4 shrink-0 z-20">
+    <!-- Left: Chat identity & stats (gets all the room it needs) -->
+    <div class="flex items-center gap-3 min-w-0 flex-1">
+      <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[var(--accent)] flex items-center justify-center font-bold text-sm shrink-0 font-display">
+        CV
+      </div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <h1 id="chatTitle" class="font-display font-semibold text-[15px] leading-tight text-[var(--foreground)] truncate">ChatVault Studio</h1>
+          <span id="msgCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-[var(--background)] border border-[var(--border)] text-[var(--accent)] font-semibold shrink-0">0 msgs</span>
+        </div>
+        <button id="chatSubtitle" class="block max-w-full text-left text-xs text-[var(--muted-foreground)] truncate hover:text-[var(--foreground)] transition" title="Click to change whose perspective you view the chat from">Portable chat archive viewer</button>
+      </div>
+    </div>
+
+    <!-- Right Controls (focused & minimal) -->
+    <div class="flex items-center gap-1.5 shrink-0 justify-end">
+      <!-- Chat Perspective Selector on Main Header -->
+      <div id="mainPerspectiveWrapper" class="flex items-center gap-1.5 bg-[var(--background)] border border-[var(--border)] rounded-xl px-2.5 py-1 text-xs shadow-sm">
+        <span class="text-[var(--muted-foreground)] font-medium whitespace-nowrap">View as:</span>
+        <select id="mainPerspectiveSelect" class="bg-transparent text-[var(--accent)] font-bold focus:outline-none cursor-pointer max-w-[130px] truncate" title="Change chat perspective: your messages appear on the right side in accent bubbles">
+          <option value="">Auto</option>
+        </select>
+      </div>
+      <!-- Quick Filter Pill -->
+      <div class="relative hidden md:flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-0.5">
+        <button data-filter="all" class="filter-btn">All</button>
+        <button data-filter="all_media" class="filter-btn">Media</button>
+        <button data-filter="audio" class="filter-btn">Voice</button>
+        <button id="moreFiltersBtn" class="px-1.5 py-1 rounded-lg text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition" title="More filters">▾</button>
+        <div id="moreFiltersMenu" class="hidden absolute right-0 top-full mt-1.5 w-40 p-1 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-2xl z-30 flex-col gap-0.5">
+          <button data-filter="photo" data-variant="menu" class="filter-btn">🖼️ Photos only</button>
+          <button data-filter="sticker" data-variant="menu" class="filter-btn">✨ Stickers only</button>
+          <button data-filter="video" data-variant="menu" class="filter-btn">🎬 Videos &amp; GIFs</button>
+        </div>
+      </div>
+
+      <!-- Search Toggle Button -->
+      <button id="toggleSearchBtn" class="icon-btn" title="Search in chat (Ctrl+F)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+
+      <!-- Import Button -->
+      <button id="openImportModalBtn" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--accent-strong)] hover:brightness-110 text-white shadow-sm transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+        </svg>
+        <span>Import</span>
+      </button>
+
+      <!-- Settings -->
+      <button id="openSettingsBtn" class="icon-btn" title="Settings & Appearance (Ctrl+,)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </button>
+
+      <!-- Toggle Right Drawer -->
+      <button id="toggleDrawerBtn" class="icon-btn" title="Toggle media gallery & stats">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm11-1v16"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================================================================
+       4. COLLAPSIBLE SEARCH & DATE JUMP BAR
+       =================================================================== -->
+  <div id="searchBar" class="hidden bg-[var(--card)] border-b border-[var(--border)] px-4 py-2 flex items-center justify-between gap-3 shrink-0 z-10">
+    <div class="flex items-center gap-2 flex-1 max-w-md bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-1">
+      <svg class="w-4 h-4 text-[var(--muted-foreground)] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search across all messages, filenames, or senders..." class="bg-transparent text-xs text-[var(--foreground)] focus:outline-none w-full" />
+      <span id="searchCountLabel" class="text-xs text-emerald-400 font-mono whitespace-nowrap"></span>
+      <button id="searchPrevBtn" class="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]" title="Previous match">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+      </button>
+      <button id="searchNextBtn" class="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]" title="Next match">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <label class="text-xs text-[var(--muted-foreground)]">Jump to date:</label>
+      <select id="dateJumpSelect" class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1 text-xs text-[var(--foreground)] focus:outline-none">
+        <option value="">Select date...</option>
+      </select>
+      <button id="closeSearchBtn" class="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       5. MAIN WORKSPACE: VIRTUALIZED CHAT STREAM + TIMELINE SCRUBBER + DRAWER
+       =================================================================== -->
+  <div class="flex-1 flex min-h-0 relative overflow-hidden">
+
+    <!-- Chat Viewport -->
+    <main class="flex-1 flex flex-col min-w-0 relative wa-wallpaper">
+      <!-- Floating Sticky Date Pill -->
+      <div id="floatingDatePill" class="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-10 opacity-0 transition-opacity duration-200">
+        <span id="floatingDateText" class="px-3.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)]/95 border border-[var(--border)] text-[var(--foreground)] shadow-md backdrop-blur-md"></span>
+      </div>
+
+      <!-- Virtualized Scroll Container with Traditional Native Scrollbar -->
+      <div id="chatScroll" class="flex-1 overflow-y-auto px-3 sm:px-6 md:px-12 py-3 select-text">
+        <div id="virtualTopSpacer" class="w-full shrink-0 pointer-events-none" style="height: 0px;"></div>
+        <div id="virtualMessagesArea" class="w-full space-y-1"></div>
+        <div id="virtualBottomSpacer" class="w-full shrink-0 pointer-events-none" style="height: 0px;"></div>
+      </div>
+
+      <!-- Scroll-to-bottom Floating Action Button -->
+      <button id="scrollToBottomBtn" class="hidden absolute bottom-14 right-6 z-10 w-10 h-10 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] shadow-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition" title="Jump to latest message">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+      </button>
+
+      <!-- Bottom Status Bar (single clean line, never clips) -->
+      <div class="bg-[var(--card)] border-t border-[var(--border)] px-4 py-1.5 flex items-center justify-between gap-3 shrink-0 text-xs text-[var(--muted-foreground)]">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="inline-flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+            <span id="mediaCountText">0 media files</span>
+          </span>
+          <span id="windowRangeText" class="hidden md:inline font-mono truncate"></span>
+        </div>
+        <span id="ramCacheBadge" class="hidden sm:inline font-mono shrink-0" title="Photos, stickers &amp; GIFs held in memory for instant display">RAM cache: 0 MB</span>
+      </div>
+    </main>
+
+    <!-- Right Sidebar: Media Grid, Stickers, Voice & Analytics -->
+    <aside id="infoDrawer" class="w-96 bg-[var(--card)] border-l border-[var(--border)] flex flex-col shrink-0 transition-all duration-200">
+      <div class="px-3.5 py-2.5 border-b border-[var(--border)] flex items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold text-[var(--foreground)] truncate">Media &amp; Chat Info</h2>
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="drawerSortBtn" class="px-2 py-1 rounded-md bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-emerald-400 hover:border-emerald-500/50 transition" title="Toggle Chronological (Oldest → Newest) vs Newest First">
+            📅 Oldest ↑
+          </button>
+          <button id="expandDrawerBtn" class="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] rounded-md border border-transparent hover:border-[var(--border)]" title="Toggle Wide Media Gallery">
+            ⇔
+          </button>
+          <button id="closeDrawerBtn" class="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] rounded-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-5 border-b border-[var(--border)] bg-[var(--background)] p-1 gap-1 text-xs font-medium">
+        <button data-tab="all_media" class="drawer-tab py-1.5 rounded-md bg-[var(--card)] text-[var(--foreground)] shadow-sm">All Media</button>
+        <button data-tab="media" class="drawer-tab py-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Photos</button>
+        <button data-tab="stickers" class="drawer-tab py-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Stickers</button>
+        <button data-tab="audio" class="drawer-tab py-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Voice</button>
+        <button data-tab="stats" class="drawer-tab py-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Stats</button>
+      </div>
+
+      <div id="drawerContent" class="flex-1 overflow-y-auto p-3 space-y-4"></div>
+    </aside>
+  </div>
+
+  <!-- ===================================================================
+       6. IMPORT MODAL (Native OS Dialogs + Drag-and-Drop + Paste + Benchmark)
+       =================================================================== -->
+  <div id="importModal" class="fixed inset-0 z-30 hidden bg-black/65 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-[var(--foreground)]">Import Chat Archive (Universal Engine)</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Supports WaChat (.zip/.txt), TelePaper (result.json/.html), CordGuild (.json/.csv), InstaGrad &amp; SocialDM logs, and TabTalk / SecureNote logs</p>
+        </div>
+        <button id="closeImportModalBtn" class="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4">
+        <!-- Supported Platforms Pill Bar -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">🟢 WaChat (.zip / .txt)</span>
+          <span class="px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold">🔵 TelePaper (result.json / .html)</span>
+          <span class="px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 font-semibold">🟣 CordGuild (.json / .txt / .csv)</span>
+          <span class="px-2.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-400 font-semibold">🩷 InstaGrad &amp; SocialDM (message_1.json)</span>
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold">💬 TabTalk / SecureNote Logs</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- Native Option 1: .ZIP Archive -->
+          <button id="nativeOpenZipBtn" class="group bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500 rounded-xl p-4 text-center transition flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-[var(--foreground)]">Open .ZIP Archive</span>
+            <span class="text-xs text-[var(--muted-foreground)] mt-0.5">Zero-extract streaming + RAM cache</span>
+          </button>
+
+          <!-- Native Option 2: Exported Folder -->
+          <button id="nativeOpenFolderBtn" class="group bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500 rounded-xl p-4 text-center transition flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-[var(--foreground)]">Open Chat Folder</span>
+            <span class="text-xs text-[var(--muted-foreground)] mt-0.5">Select unzipped chat directory</span>
+          </button>
+
+          <!-- Native Option 3: Multiple Files -->
+          <button id="nativeOpenFilesBtn" class="group bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500 rounded-xl p-4 text-center transition flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-[var(--foreground)]">Select .TXT + Media</span>
+            <span class="text-xs text-[var(--muted-foreground)] mt-0.5">Choose multiple files at once</span>
+          </button>
+        </div>
+
+        <!-- Giant Archive Benchmark Banner -->
+        <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-bold text-amber-400">⚡ Want to stress-test giant archive performance?</div>
+            <div class="text-xs text-[var(--muted-foreground)]">Generates 25,000 messages + hundreds of photos, stickers & voice notes across 3 years.</div>
+          </div>
+          <button id="modalGiantTestBtn" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 transition">
+            Run 25K Test
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="h-px bg-[var(--border)] flex-1"></div>
+          <span class="text-xs text-[var(--muted-foreground)]">OR PASTE EXPORTED TEXT</span>
+          <div class="h-px bg-[var(--border)] flex-1"></div>
+        </div>
+
+        <div>
+          <textarea id="pasteChatTextarea" rows="5" placeholder="Paste exported chat .txt content here..." class="w-full rounded-xl bg-[var(--background)] border border-[var(--border)] p-3 text-xs text-[var(--foreground)] font-mono focus:outline-none focus:border-emerald-500 select-text"></textarea>
+          <div class="flex justify-between items-center mt-2">
+            <span class="text-xs text-[var(--muted-foreground)]">Tip: You can also drag & drop any .zip or folder directly onto this window.</span>
+            <button id="parsePastedBtn" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+              Parse Pasted Chat
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       7. PRO LIGHTBOX MODAL (Zoom, Pan, Filmstrip, Download, Jump)
+       =================================================================== -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden bg-black/92 backdrop-blur-md flex flex-col justify-between p-4 select-none">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between text-white px-2 py-1 z-10">
+      <div class="min-w-0">
+        <div id="lightboxTitle" class="text-sm font-semibold truncate">Media Filename</div>
+        <div id="lightboxMeta" class="text-xs text-white/70 truncate">Sender • Timestamp</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="lightboxResetZoomBtn" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-mono text-white transition" title="Scroll wheel to zoom">
+          100%
+        </button>
+        <button id="lightboxJumpBtn" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium text-white transition">
+          Jump to message
+        </button>
+        <a id="lightboxDownloadBtn" href="#" download class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-medium text-white transition">
+          Save File
+        </a>
+        <button id="closeLightboxBtn" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Media Stage -->
+    <div id="lightboxViewport" class="flex-1 flex items-center justify-center relative min-h-0 my-1 overflow-hidden">
+      <button id="lightboxPrevBtn" class="absolute left-3 z-10 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+
+      <div id="lightboxStage" class="w-full h-full flex items-center justify-center transition-transform duration-75 ease-out px-12"></div>
+
+      <button id="lightboxNextBtn" class="absolute right-3 z-10 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Bottom Caption & Filmstrip -->
+    <div class="space-y-2 z-10">
+      <div id="lightboxCaption" class="text-center text-sm text-white/90 max-w-2xl mx-auto"></div>
+      <div id="lightboxFilmstrip" class="flex items-center justify-center gap-1.5 overflow-x-auto py-1 max-w-3xl mx-auto"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       8. SETTINGS & CUSTOMIZATION MODAL (Theme, Fonts, Size, Density, Perspective, Tools)
+       =================================================================== -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Settings Header -->
+      <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Studio Settings &amp; Appearance</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">Customize themes, typography, perspective &amp; performance</p>
+          </div>
+        </div>
+        <button id="closeSettingsModalBtn" class="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Settings Body (Scrollable) -->
+      <div class="p-5 overflow-y-auto space-y-6">
+        <!-- 1. Theme Selection -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Chat Platform Theme</label>
+              <p class="text-xs text-[var(--muted-foreground)]">Choose visual styling, bubble geometry, and color accents</p>
+            </div>
+            <!-- Dark / Light mode toggle pill -->
+            <button id="themeModeToggleBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--background)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] transition">
+              <span id="themeModeIcon" class="flex items-center"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></span>
+              <span id="themeModeLabel">Dark</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <!-- WaChat Emerald -->
+            <button data-settings-theme="emerald" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-emerald-500/80 text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">WaChat Emerald</span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-600/30 text-emerald-300 font-mono">#005c4b</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Clean minimal</span>
+              </div>
+            </button>
+
+            <!-- TelePaper Sky -->
+            <button data-settings-theme="sky" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">TelePaper Sky</span>
+                <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-600/30 text-sky-300 font-mono">#2b5278</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Paper plane</span>
+              </div>
+            </button>
+
+            <!-- CordGuild Blurple -->
+            <button data-settings-theme="guild" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">CordGuild Blurple</span>
+                <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-600/30 text-indigo-300 font-mono">#5865f2</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Gamer feed</span>
+              </div>
+            </button>
+
+            <!-- iBubble Blue -->
+            <button data-settings-theme="bubble" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">iBubble Blue</span>
+                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-600/30 text-blue-300 font-mono">#0a84ff</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Glossy pill</span>
+              </div>
+            </button>
+
+            <!-- InstaGrad Social -->
+            <button data-settings-theme="gradient" class="theme-card p-3 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition relative flex flex-col justify-between h-20">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-[var(--foreground)]">InstaGrad Pink</span>
+                <span class="w-3 h-3 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500"></span>
+              </div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-600/30 text-pink-300 font-mono">Gradient</span>
+                <span class="text-[10px] text-[var(--muted-foreground)]">Social DM</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 2. Typography Engine -->
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Typography &amp; Legibility</label>
+            <p class="text-xs text-[var(--muted-foreground)]">Curated high-readability font families and layout density</p>
+          </div>
+
+          <!-- Font Family Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <!-- Plus Jakarta Sans -->
+            <button data-font-key="jakarta" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-emerald-500/80 text-left transition" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Plus Jakarta</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Modern Geometric</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Inter -->
+            <button data-font-key="inter" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Inter', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Inter</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Clean Tech</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Outfit -->
+            <button data-font-key="outfit" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Outfit', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Outfit</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Friendly Round</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- Lexend -->
+            <button data-font-key="lexend" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'Lexend', sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">Lexend</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Reading Enhanced</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- System Default -->
+            <button data-font-key="system" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              <div class="text-xs font-bold text-[var(--foreground)]">System Native</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Segoe / Apple UI</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+
+            <!-- JetBrains Mono -->
+            <button data-font-key="mono" class="font-card p-2.5 rounded-xl bg-[var(--background)] border-2 border-transparent hover:border-[var(--border)] text-left transition" style="font-family: 'JetBrains Mono', monospace;">
+              <div class="text-xs font-bold text-[var(--foreground)]">JetBrains Mono</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Developer Code</div>
+              <div class="text-xs mt-1 text-[var(--accent)] font-medium">Hello there! 12:45</div>
+            </button>
+          </div>
+
+          <!-- Font Size Slider & Density Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[var(--background)] p-3 rounded-xl border border-[var(--border)]">
+            <!-- Size Slider -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-[var(--foreground)]">Message Font Size</span>
+                <span id="fontSizeDisplay" class="text-xs font-mono font-bold text-[var(--accent)]">14px</span>
+              </div>
+              <input id="fontSizeSlider" type="range" min="13" max="17" step="1" value="14" class="w-full accent-emerald-500 cursor-pointer h-1.5 rounded-lg bg-[var(--panel)]" />
+              <div class="flex justify-between text-[10px] text-[var(--muted-foreground)] font-mono">
+                <span>13px Compact</span>
+                <span>14px Standard</span>
+                <span>15px</span>
+                <span>17px Large</span>
+              </div>
+            </div>
+
+            <!-- Bubble Spacing Density -->
+            <div class="space-y-1.5">
+              <span class="text-xs font-semibold text-[var(--foreground)] block">Bubble Spacing Density</span>
+              <div class="grid grid-cols-3 gap-1 bg-[var(--panel)] p-1 rounded-lg text-xs font-medium text-center">
+                <button data-density="compact" class="density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Compact</button>
+                <button data-density="standard" class="density-btn py-1 rounded bg-[var(--card)] text-[var(--foreground)] font-semibold shadow-sm transition">Normal</button>
+                <button data-density="relaxed" class="density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">Spacious</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 3. Perspective / View-As -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Chat Perspective ("View as")</label>
+          <p class="text-xs text-[var(--muted-foreground)]">Select whose messages should appear on the right side in the outgoing accent bubble</p>
+          <div class="flex items-center gap-3">
+            <select id="settingsPerspectiveSelect" class="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--accent)]">
+              <option value="">Auto-detected sender</option>
+            </select>
+            <button id="settingsPerspectiveResetBtn" class="px-3 py-2 rounded-xl bg-[var(--panel)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--border)] transition">
+              Auto Detect
+            </button>
+          </div>
+        </div>
+
+        <div class="h-px bg-[var(--border)]"></div>
+
+        <!-- 4. Developer & Diagnostics Tools -->
+        <div class="space-y-3">
+          <label class="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Performance &amp; Diagnostic Tools</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button id="settingsGiantTestBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-amber-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-amber-400">âš¡ 25K Benchmark</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Stress-test 25k msgs across 3 yrs</div>
+              </div>
+              <span class="text-[10px] text-amber-500 font-mono mt-2">Run Giant Test â†’</span>
+            </button>
+
+            <button id="settingsResetDemoBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-emerald-400">â†º Reset Demo</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Restore rich interactive demo</div>
+              </div>
+              <span class="text-[10px] text-emerald-500 font-mono mt-2">Restore Sample â†’</span>
+            </button>
+
+            <button id="settingsAttachMediaBtn" class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-blue-500/50 text-left transition flex flex-col justify-between">
+              <div>
+                <div class="text-xs font-bold text-blue-400">&#128206; Attach Media</div>
+                <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">Link loose images or voice notes</div>
+              </div>
+              <span class="text-[10px] text-blue-500 font-mono mt-2">Select Files â†’</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Footer -->
+      <div class="px-5 py-3 border-t border-[var(--border)] bg-[var(--background)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+        <span class="font-mono">ChatVault Studio v2.2.2 &bull; Zero-Extract Engine</span>
+        <button id="doneSettingsModalBtn" class="px-4 py-1.5 rounded-xl bg-[var(--accent-strong)] hover:brightness-110 text-white font-semibold transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**********************************************************************
+     * 1. STATE & NATIVE BRIDGE
+     **********************************************************************/
+    const SENDER_PALETTE = [
+      '#10b981', '#3b82f6', '#f59e0b', '#ec4899',
+      '#8b5cf6', '#06b6d4', '#f97316', '#14b8a6'
+    ];
+
+    const state = {
+      sessionId: 1,
+      chatName: 'ChatVault Studio',
+      messages: [],            // Parsed messages from native C# engine
+      filteredMessages: [],    // Filtered view
+      renderStart: 0,
+      renderEnd: 0,
+      windowSize: 180,         // Sliding virtual window size for 120fps scrolling
+      participants: [],        // [{ name, count, words, mediaCount, color }]
+      participantMap: new Map(),
+      hourHistogram: new Array(24).fill(0),
+      meSender: '',
+      mediaFilesCount: 0,
+      ramCacheMB: 0,
+      activeFilter: 'all',
+      activeDrawerTab: 'all_media',
+      drawerSortChronological: true, // true = Oldest -> Newest chronological order
+      drawerRenderLimit: 60,
+      drawerWide: false,
+      searchQuery: '',
+      searchHits: [],
+      searchCursor: -1,
+      lightboxItems: [],
+      lightboxIndex: -1,
+      lightboxZoom: 1,
+      decodedUrls: new Set()   // Tracks bitmaps already pre-decoded into GPU memory
+    };
+
+    function sendHostCommand(cmd, payload = {}) {
+      if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(JSON.stringify({ cmd, ...payload }));
+      }
+    }
+
+    // Listen for messages from C# Native Engine
+    if (window.chrome && window.chrome.webview) {
+      window.chrome.webview.addEventListener('message', async (event) => {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (!data) return;
+
+        if (data.type === 'progress') {
+          showProgressUpdate(data);
+        } else if (data.type === 'chat_ready') {
+          await loadChatBundleFromNative(data);
+        } else if (data.type === 'media_updated') {
+          state.mediaFilesCount = data.mediaFilesCount || state.mediaFilesCount;
+          state.ramCacheMB = data.ramCacheMB || state.ramCacheMB;
+          updateTelemetryFooter();
+          renderVisibleWindow();
+          renderDrawer();
+        }
+      });
+    }
+
+    /**********************************************************************
+     * 2. PROGRESS BAR & INSTANT GPU BITMAP PRE-DECODER
+     **********************************************************************/
+    function showProgressUpdate(p) {
+      const modal = document.getElementById('progressModal');
+      modal.classList.remove('hidden');
+      document.getElementById('importModal').classList.add('hidden');
+
+      const pct = Math.max(0, Math.min(100, Math.round(p.percent || 0)));
+      document.getElementById('progressTitle').textContent = p.title || 'Importing Chat Archive...';
+      document.getElementById('progressPhase').textContent = p.phase || 'Processing...';
+      document.getElementById('progressPercentText').textContent = `${pct}%`;
+      document.getElementById('progressBarFill').style.width = `${pct}%`;
+      document.getElementById('progressDetailText').textContent = p.detail || '';
+      document.getElementById('progressTelemetryBadge').textContent = p.telemetry || '';
+
+      const step = p.step || 1;
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`stepIndicator${i}`);
+        if (i < step) {
+          el.className = 'py-1.5 px-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-xs font-bold text-emerald-400';
+        } else if (i === step) {
+          el.className = 'py-1.5 px-1 rounded-lg bg-emerald-600 text-xs font-bold text-white shadow-sm';
+        } else {
+          el.className = 'py-1.5 px-1 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs font-medium text-[var(--muted-foreground)]';
+        }
+      }
+    }
+
+    function hideProgressModal() {
+      document.getElementById('progressModal').classList.add('hidden');
+    }
+
+    function mediaUrlFor(fileName) {
+      if (!fileName) return '';
+      const key = fileName.trim().split('/').pop().split('\\').pop().toLowerCase();
+      return `/media/${encodeURIComponent(key)}?s=${state.sessionId}`;
+    }
+
+    // Pre-decode images in Chromium's background raster threads so they paint in 0ms
+    async function preDecodeImageUrls(urls, timeoutMs = 600) {
+      const unique = urls.filter(u => u && !state.decodedUrls.has(u));
+      if (unique.length === 0) return;
+
+      const decodePromises = unique.map(url => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.src = url;
+          if (img.decode) {
+            img.decode().then(() => {
+              state.decodedUrls.add(url);
+              resolve();
+            }).catch(() => resolve());
+          } else {
+            img.onload = () => { state.decodedUrls.add(url); resolve(); };
+            img.onerror = () => resolve();
+          }
+        });
+      });
+
+      await Promise.race([
+        Promise.all(decodePromises),
+        new Promise(r => setTimeout(r, timeoutMs))
+      ]);
+    }
+
+    // Background lookahead pre-decoder for smooth scrolling through photo-heavy chats
+    function triggerLookaheadPreDecode(startIdx, endIdx) {
+      const lookStart = Math.max(0, startIdx - 50);
+      const lookEnd = Math.min(state.filteredMessages.length, endIdx + 50);
+      const urls = [];
+      for (let i = lookStart; i < lookEnd; i++) {
+        const m = state.filteredMessages[i];
+        if (m && m.attFile && m.attLinked && (m.attType === 'photo' || m.attType === 'sticker')) {
+          urls.push(mediaUrlFor(m.attFile));
+        }
+      }
+      if (urls.length > 0) {
+        preDecodeImageUrls(urls, 2000);
+      }
+    }
+
+    async function loadChatBundleFromNative(readyNotification) {
+      try {
+        showProgressUpdate({
+          title: readyNotification.chatName || 'Loading Chat...',
+          phase: 'Stage 4/4: Pre-decoding viewport photos & stickers in GPU...',
+          percent: 94,
+          step: 4,
+          detail: 'Fetching parsed message bundle...',
+          telemetry: `${(readyNotification.messageCount || 0).toLocaleString()} msgs`
+        });
+
+        const res = await fetch(`/api/chat-bundle?t=${Date.now()}`);
+        const bundle = await res.json();
+
+        state.sessionId = bundle.sessionId || (state.sessionId + 1);
+        state.decodedUrls.clear();
+        state.chatName = bundle.chatName || 'Chat Vault';
+        state.mediaFilesCount = bundle.mediaFilesCount || 0;
+        state.ramCacheMB = bundle.ramCacheMB || 0;
+        state.hourHistogram = bundle.hourHistogram || new Array(24).fill(0);
+
+        if (bundle.platform) {
+          applyAppTheme(bundle.platform);
+        }
+
+        // Unpack compact messages array: [id, dateStr, timeStr, sender, flags, text, attType, attFile, attSize]
+        // flags bitmask: 1=isSystem, 2=isEdited, 4=isDeleted, 8=isJumboEmoji, 16=attOmitted, 32=attLinked
+        const dates = bundle.dates || [];
+        const senders = bundle.senders || [];
+
+        state.messages = (bundle.messages || []).map(row => {
+          const flags = row[4] || 0;
+          return {
+            id: row[0],
+            dateStr: dates[row[1]] || '',
+            timeStr: row[2] || '',
+            sender: row[3] >= 0 ? (senders[row[3]] || '') : '',
+            isSystem: (flags & 1) !== 0,
+            isEdited: (flags & 2) !== 0,
+            isDeleted: (flags & 4) !== 0,
+            isJumboEmoji: (flags & 8) !== 0,
+            attOmitted: (flags & 16) !== 0,
+            attLinked: (flags & 32) !== 0,
+            text: row[5] || '',
+            attType: row[6] || '',
+            attFile: row[7] || '',
+            attSize: row[8] || 0
+          };
+        });
+
+        // Participants
+        state.participantMap.clear();
+        state.participants = (bundle.participants || []).map((p, idx) => {
+          const item = {
+            name: p.name,
+            count: p.count,
+            words: p.words,
+            mediaCount: p.mediaCount,
+            color: SENDER_PALETTE[idx % SENDER_PALETTE.length]
+          };
+          state.participantMap.set(item.name, item);
+          return item;
+        });
+
+        state.meSender = bundle.defaultMe || (state.participants[0]?.name || '');
+        state.activeFilter = 'all';
+        updateFilterButtonsUI();
+        rebuildHeaderAndDropdowns(dates);
+
+        state.filteredMessages = state.messages;
+        const total = state.filteredMessages.length;
+        state.renderEnd = total;
+        state.renderStart = Math.max(0, total - state.windowSize);
+
+        // Pre-decode all initial viewport photos & stickers BEFORE dismissing progress bar!
+        const initialUrls = [];
+        for (let i = Math.max(0, total - 80); i < total; i++) {
+          const m = state.filteredMessages[i];
+          if (m && m.attFile && m.attLinked && (m.attType === 'photo' || m.attType === 'sticker')) {
+            initialUrls.push(mediaUrlFor(m.attFile));
+          }
+        }
+
+        showProgressUpdate({
+          title: state.chatName,
+          phase: 'Stage 4/4: Locking GPU textures for instant display...',
+          percent: 99,
+          step: 4,
+          detail: `Pre-decoding ${initialUrls.length} viewport photos & stickers...`,
+          telemetry: `${state.ramCacheMB.toFixed(1)} MB in RAM`
+        });
+
+        await preDecodeImageUrls(initialUrls, 500);
+
+        applyFilterAndRender(false);
+        hideProgressModal();
+        sendHostCommand('render_complete', { count: state.messages.length });
+      } catch (err) {
+        console.error('Error loading chat bundle:', err);
+        hideProgressModal();
+      }
+    }
+
+    function rebuildHeaderAndDropdowns(uniqueDates) {
+      const mainSel = document.getElementById('mainPerspectiveSelect');
+      const settingsSel = document.getElementById('settingsPerspectiveSelect');
+      [mainSel, settingsSel].forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Auto Detect</option>';
+        for (const p of state.participants) {
+          const opt = document.createElement('option');
+          opt.value = p.name;
+          opt.textContent = `${p.name} (${p.count.toLocaleString()} msgs)`;
+          if (p.name === state.meSender) opt.selected = true;
+          sel.appendChild(opt);
+        }
+      });
+      const chatSub = document.getElementById('chatSubtitle');
+      if (chatSub) {
+        chatSub.textContent = `Viewing as: ${state.meSender || 'Auto-detected'} â€¢ ${state.participants.length} participants`;
+      }
+      const dateSelect = document.getElementById('dateJumpSelect');
+      dateSelect.innerHTML = '<option value="">Jump to date...</option>';
+      for (const d of uniqueDates) {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        dateSelect.appendChild(opt);
+      }
+
+      document.getElementById('chatTitle').textContent = state.chatName;
+      document.getElementById('msgCountBadge').textContent = `${state.messages.length.toLocaleString()} msgs`;
+      const initials = state.chatName.replace(/[^a-zA-Z0-9\s]/g, '').trim().split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase() || 'WA';
+      document.getElementById('chatAvatar').textContent = initials;
+
+      const names = state.participants.slice(0, 5).map(p => p.name).join(', ');
+      document.getElementById('chatSubtitle').textContent = names
+        ? `${names}${state.participants.length > 5 ? '...' : ''} • ${state.mediaFilesCount.toLocaleString()} media files indexed`
+        : 'System log';
+
+      updateTelemetryFooter();
+    }
+
+    function updateTelemetryFooter() {
+      document.getElementById('mediaCountText').textContent = `${state.mediaFilesCount.toLocaleString()} media files linked`;
+      document.getElementById('ramCacheBadge').textContent = `RAM Hot-Cache: ${state.ramCacheMB.toFixed(1)} MB`;
+    }
+
+    /**********************************************************************
+     * 3. VIRTUALIZED SLIDING-WINDOW CHAT RENDERER
+     **********************************************************************/
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatMessageHtml(rawText, searchQuery) {
+      if (!rawText) return '';
+      let html = escapeHtml(rawText);
+      html = html.replace(/```([\s\S]+?)```/g, '<code class="px-1.5 py-0.5 rounded bg-black/20 font-mono text-xs">$1</code>');
+      html = html.replace(/`([^`\n]+)`/g, '<code class="px-1 py-0.5 rounded bg-black/20 font-mono text-xs">$1</code>');
+      html = html.replace(/(^|\s)\*([^*\n]+)\*(?=\s|$|[.,!?])/g, '$1<strong class="font-bold">$2</strong>');
+      html = html.replace(/(^|\s)_([^_\n]+)_(?=\s|$|[.,!?])/g, '$1<em class="italic">$2</em>');
+      html = html.replace(/(^|\s)~([^~\n]+)~(?=\s|$|[.,!?])/g, '$1<del class="line-through opacity-75">$2</del>');
+      html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline text-emerald-400 hover:text-emerald-300 break-all">$1</a>');
+
+      if (searchQuery && searchQuery.trim().length > 0) {
+        const escapedQ = searchQuery.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`(${escapedQ})`, 'gi');
+        html = html.replace(/(<[^>]+>)|([^<]+)/g, (match, tag, textNode) => tag ? tag : textNode.replace(re, '<mark class="wa-search-hit">$1</mark>'));
+      }
+      return html.replace(/\n/g, '<br/>');
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes <= 0) return '';
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    function applyFilterAndRender(preserveScroll = false) {
+      if (state.activeFilter === 'all') {
+        state.filteredMessages = state.messages;
+      } else if (state.activeFilter === 'all_media') {
+        state.filteredMessages = state.messages.filter(m => m.attType === 'photo' || m.attType === 'video' || m.attType === 'sticker');
+      } else {
+        state.filteredMessages = state.messages.filter(m => m.attType === state.activeFilter);
+      }
+
+      state.lightboxItems = state.messages.filter(m =>
+        m.attLinked && m.attFile && (m.attType === 'photo' || m.attType === 'sticker' || m.attType === 'video')
+      );
+
+      state.drawerRenderLimit = 60;
+
+      const total = state.filteredMessages.length;
+      if (!preserveScroll) {
+        state.renderEnd = total;
+        state.renderStart = Math.max(0, total - state.windowSize);
+      }
+
+      renderVisibleWindow();
+      renderDrawer();
+      if (!preserveScroll) {
+        scrollToBottom(false);
+      }
+    }
+
+    let isShiftingWindow = false;
+
+    const AVG_ROW_HEIGHT = 68;
+
+    function renderVisibleWindow() {
+      const topSpacer = document.getElementById('virtualTopSpacer');
+      const bottomSpacer = document.getElementById('virtualBottomSpacer');
+      const container = document.getElementById('virtualMessagesArea');
+      if (!container || !topSpacer || !bottomSpacer) return;
+
+      const total = state.filteredMessages.length;
+
+      document.getElementById('windowRangeText').textContent = total > 0
+        ? `Showing ${(state.renderStart + 1).toLocaleString()}–${state.renderEnd.toLocaleString()} of ${total.toLocaleString()}`
+        : '';
+
+      if (total === 0) {
+        topSpacer.style.height = '0px';
+        bottomSpacer.style.height = '0px';
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-64 text-center px-4">
+            <p class="text-sm font-semibold text-[var(--foreground)]">No messages match this filter</p>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">Switch filter back to "All" or import another chat archive.</p>
+          </div>`;
+        return;
+      }
+
+      // Maintain spacer heights to establish native scrollHeight across entire archive
+      const topHeight = Math.round(state.renderStart * AVG_ROW_HEIGHT);
+      const bottomHeight = Math.round(Math.max(0, total - state.renderEnd) * AVG_ROW_HEIGHT);
+      topSpacer.style.height = `${topHeight}px`;
+      bottomSpacer.style.height = `${bottomHeight}px`;
+
+      const slice = state.filteredMessages.slice(state.renderStart, state.renderEnd);
+      container.innerHTML = '';
+
+      const isGroupChat = state.participants.length > 2;
+      let lastDate = null;
+      let lastSender = null;
+      const frag = document.createDocumentFragment();
+
+      for (let i = 0; i < slice.length; i++) {
+        const msg = slice[i];
+
+        if (msg.dateStr !== lastDate) {
+          lastDate = msg.dateStr;
+          lastSender = null;
+          const dateWrap = document.createElement('div');
+          dateWrap.className = 'flex justify-center my-3 date-marker';
+          dateWrap.dataset.date = msg.dateStr;
+          dateWrap.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] shadow-sm">${escapeHtml(msg.dateStr)}</span>`;
+          frag.appendChild(dateWrap);
+        }
+
+        if (msg.isSystem) {
+          lastSender = null;
+          const sysWrap = document.createElement('div');
+          sysWrap.id = `msg-${msg.id}`;
+          sysWrap.dataset.date = msg.dateStr;
+          sysWrap.dataset.idx = state.renderStart + i;
+          sysWrap.className = 'flex justify-center my-2';
+          sysWrap.innerHTML = `<div class="max-w-md px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-center text-[var(--muted-foreground)] leading-relaxed">🔒 ${formatMessageHtml(msg.text, state.searchQuery)}</div>`;
+          frag.appendChild(sysWrap);
+          continue;
+        }
+
+        const isOut = msg.sender === state.meSender;
+        const isConsecutive = lastSender === msg.sender;
+        lastSender = msg.sender;
+
+        const participant = state.participantMap.get(msg.sender);
+        const senderColor = participant ? participant.color : '#10b981';
+
+        const row = document.createElement('div');
+        row.id = `msg-${msg.id}`;
+        row.dataset.date = msg.dateStr;
+        row.dataset.idx = state.renderStart + i;
+        row.className = `flex flex-col ${isOut ? 'items-end' : 'items-start'} ${isConsecutive ? 'mt-0.5' : 'mt-2.5'}`;
+
+        // STICKER
+        if (msg.attType === 'sticker') {
+          const url = msg.attLinked && msg.attFile ? mediaUrlFor(msg.attFile) : '';
+          const stickerHtml = url
+            ? `<img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="wa-sticker-img wa-loop-img w-36 h-36 object-contain cursor-pointer select-none" data-lightbox-id="${msg.id}" />`
+            : `<div class="w-32 h-32 rounded-2xl bg-[var(--card)] border border-dashed border-[var(--border)] flex flex-col items-center justify-center p-3 text-center"><span class="text-2xl mb-1">✨</span><span class="text-xs font-medium text-[var(--muted-foreground)] break-all">${escapeHtml(msg.attFile || 'Sticker omitted')}</span></div>`;
+
+          row.innerHTML = `
+            <div class="relative group max-w-xs">
+              ${!isOut && isGroupChat && !isConsecutive ? `<div class="text-xs font-semibold mb-1 px-1" style="color:${senderColor}">${escapeHtml(msg.sender)}</div>` : ''}
+              ${stickerHtml}
+              <div class="mt-1 flex items-center justify-end gap-1 px-2 py-0.5 rounded-full bg-[var(--card)]/90 border border-[var(--border)] text-xs text-[var(--muted-foreground)] shadow-sm w-fit ml-auto">
+                <span>${escapeHtml(msg.timeStr)}</span>
+                ${isOut ? renderReadTicks() : ''}
+              </div>
+            </div>`;
+          frag.appendChild(row);
+          continue;
+        }
+
+        const bubbleClass = isOut ? (isConsecutive ? 'wa-bubble-out-cont' : 'wa-bubble-out') : (isConsecutive ? 'wa-bubble-in-cont' : 'wa-bubble-in');
+        const senderHeaderHtml = (!isOut && (isGroupChat || !isConsecutive))
+          ? `<div class="text-xs font-bold mb-1 leading-tight" style="color: ${senderColor}">${escapeHtml(msg.sender)}</div>`
+          : '';
+        const attachmentHtml = msg.attType ? renderAttachmentInsideBubble(msg, isOut, senderColor) : '';
+
+        let bodyHtml = '';
+        if (msg.isDeleted) {
+          bodyHtml = `<div class="flex items-center gap-1.5 italic text-xs text-[var(--muted-foreground)] py-0.5"><span>🚫</span><span>${escapeHtml(msg.text)}</span></div>`;
+        } else if (msg.isJumboEmoji) {
+          bodyHtml = `<div class="text-4xl py-1 leading-none">${escapeHtml(msg.text)}</div>`;
+        } else if (msg.text) {
+          bodyHtml = `<div class="msg-text leading-relaxed break-words">${formatMessageHtml(msg.text, state.searchQuery)}</div>`;
+        }
+
+        row.innerHTML = `
+          <div class="${bubbleClass} bubble-inner max-w-[85%] sm:max-w-[70%] md:max-w-[60%] shadow-sm relative">
+            ${senderHeaderHtml}
+            ${attachmentHtml}
+            ${bodyHtml}
+            <div class="flex items-center justify-end gap-1 mt-1 -mb-0.5 select-none">
+              ${msg.isEdited ? `<span class="text-xs text-[var(--muted-foreground)] italic mr-0.5">Edited</span>` : ''}
+              <span class="text-xs text-[var(--muted-foreground)]">${escapeHtml(msg.timeStr)}</span>
+              ${isOut ? renderReadTicks() : ''}
+            </div>
+          </div>`;
+        frag.appendChild(row);
+      }
+
+      container.appendChild(frag);
+      bindMediaEvents(container);
+
+      // Trigger background lookahead pre-decoding for adjacent photos/stickers
+      triggerLookaheadPreDecode(state.renderStart, state.renderEnd);
+    }
+
+    function renderReadTicks() {
+      return `<svg class="w-4 h-4 text-sky-400 shrink-0" viewBox="0 0 16 15" fill="none"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.879a.32.32 0 0 1-.484.033l-.358-.325a.319.319 0 0 0-.484.032l-.378.483a.418.418 0 0 0 .036.541l1.32 1.266c.143.14.361.125.484-.033l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.879a.32.32 0 0 1-.484.033L1.891 7.769a.366.366 0 0 0-.515.006l-.423.433a.364.364 0 0 0 .006.514l3.258 3.185c.143.14.361.125.484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="currentColor"/></svg>`;
+    }
+
+    function renderAttachmentInsideBubble(msg, isOut, senderColor) {
+      if (msg.attOmitted) {
+        return `<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-black/15 border border-[var(--border)] text-xs text-[var(--muted-foreground)] italic mb-1"><span>📎</span><span>${escapeHtml(msg.attFile || 'Media omitted')}</span></div>`;
+      }
+
+      const url = msg.attLinked && msg.attFile ? mediaUrlFor(msg.attFile) : '';
+
+      if (msg.attType === 'photo') {
+        if (url) {
+          return `
+            <div class="mb-1.5 -mx-1 -mt-0.5 rounded-lg overflow-hidden bg-black/10 cursor-pointer group relative min-w-[220px]" data-lightbox-id="${msg.id}">
+              <img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="max-h-80 w-full object-cover rounded-lg group-hover:scale-[1.01] transition duration-150" />
+            </div>`;
+        }
+        return renderUnlinkedMediaCard('🖼️', msg.attFile, 'Photo attachment — drop file to link');
+      }
+
+      if (msg.attType === 'video') {
+        const isStreamVideo = isStreamableVideoFile(msg.attFile);
+        const isGif = isGifLikeMedia(msg.attFile);
+        if (url) {
+          if (isStreamVideo) {
+            return `
+              <div class="mb-1.5 -mx-1 -mt-0.5 rounded-lg overflow-hidden bg-black/40 relative w-[290px] sm:w-[375px] max-w-full">
+                <video src="${url}" loop muted playsinline preload="metadata" controls class="wa-viewable-video w-full min-h-[210px] max-h-96 object-contain rounded-lg bg-black/30"></video>
+                <span class="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/65 text-emerald-400 text-xs font-bold pointer-events-none">${isGif ? 'GIF • ∞ LOOP' : '🎬 ∞ LOOP'}</span>
+                <button data-lightbox-id="${msg.id}" class="absolute top-2 right-2 px-2.5 py-1 rounded bg-black/75 hover:bg-emerald-600 text-white text-xs font-semibold shadow transition">⛶ Full View</button>
+              </div>`;
+          } else {
+            return `
+              <div class="mb-1.5 -mx-1 -mt-0.5 rounded-lg overflow-hidden bg-black/40 relative w-[290px] sm:w-[375px] max-w-full cursor-pointer group" data-lightbox-id="${msg.id}">
+                <img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="wa-loop-img w-full min-h-[210px] max-h-96 object-contain rounded-lg group-hover:scale-[1.01] transition duration-150" />
+                <span class="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/65 text-emerald-400 text-xs font-bold pointer-events-none">GIF • ∞ LOOP</span>
+                <button data-lightbox-id="${msg.id}" class="absolute top-2 right-2 px-2.5 py-1 rounded bg-black/75 group-hover:bg-emerald-600 text-white text-xs font-semibold shadow transition">⛶ Full View</button>
+              </div>`;
+          }
+        }
+        return renderUnlinkedMediaCard('🎬', msg.attFile, 'Video / GIF attachment — drop file to play');
+      }
+
+      if (msg.attType === 'audio') {
+        if (url) {
+          const bars = [];
+          const seedStr = msg.attFile || 'voice';
+          for (let i = 0; i < 28; i++) {
+            const code = seedStr.charCodeAt(i % seedStr.length) + i * 17;
+            bars.push(`<span class="voice-bar w-1 rounded-full bg-current opacity-40 transition-all" style="height:${22 + (code % 68)}%"></span>`);
+          }
+          const initials = (msg.sender || 'U').slice(0, 2).toUpperCase();
+          return `
+            <div class="voice-player flex items-center gap-2.5 py-1.5 px-1 min-w-[235px] sm:min-w-[275px]" data-audio-url="${url}">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 relative" style="background:${senderColor}">
+                ${escapeHtml(initials)}
+                <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[var(--card)] flex items-center justify-center text-emerald-400">🎙️</span>
+              </div>
+              <button class="voice-play-btn w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center shrink-0 shadow-sm transition">
+                <svg class="play-icon w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="pause-icon w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+              <div class="flex-1 flex flex-col gap-1 min-w-0">
+                <div class="voice-SeekWrap h-6 flex items-center gap-0.5 cursor-pointer text-emerald-400">${bars.join('')}</div>
+                <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+                  <span class="voice-time">Voice note</span>
+                  <button class="voice-speed-btn px-1.5 py-0.2 rounded bg-black/20 text-xs font-semibold hover:bg-black/30 transition">1x</button>
+                </div>
+              </div>
+            </div>`;
+        }
+        return renderUnlinkedMediaCard('🎙️', msg.attFile, 'Voice note — drop audio file to play');
+      }
+
+      if (msg.attType === 'vcard') {
+        return `<div class="flex items-center gap-3 p-2.5 rounded-xl bg-black/15 border border-[var(--border)] mb-1"><div class="w-9 h-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">👤</div><div class="min-w-0 flex-1"><div class="text-xs font-semibold text-[var(--foreground)] truncate">${escapeHtml((msg.attFile || '').replace(/\.vcf$/i, ''))}</div><div class="text-xs text-[var(--muted-foreground)]">Contact Card (.vcf)</div></div>${url ? `<a href="${url}" download="${escapeHtml(msg.attFile)}" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/30">Save</a>` : ''}</div>`;
+      }
+
+      const ext = ((msg.attFile || '').split('.').pop() || 'DOC').toUpperCase().slice(0, 4);
+      return `<div class="flex items-center gap-3 p-2.5 rounded-xl bg-black/15 border border-[var(--border)] mb-1 min-w-[215px]"><div class="w-10 h-10 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center font-bold text-xs shrink-0">${escapeHtml(ext)}</div><div class="min-w-0 flex-1"><div class="text-xs font-semibold text-[var(--foreground)] truncate">${escapeHtml(msg.attFile)}</div><div class="text-xs text-[var(--muted-foreground)]">${msg.attSize ? formatBytes(msg.attSize) : 'Document'}</div></div>${url ? `<a href="${url}" download="${escapeHtml(msg.attFile)}" class="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></a>` : ''}</div>`;
+    }
+
+    function renderUnlinkedMediaCard(icon, fileName, subtitle) {
+      return `<div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-black/15 border border-dashed border-[var(--border)] mb-1"><span class="text-lg shrink-0">${icon}</span><div class="min-w-0 flex-1"><div class="text-xs font-semibold text-[var(--foreground)] truncate">${escapeHtml(fileName || 'Attachment')}</div><div class="text-xs text-[var(--muted-foreground)] truncate">${escapeHtml(subtitle)}</div></div></div>`;
+    }
+
+    /**********************************************************************
+     * 4. VOICE PLAYER, VIEWABLE-AREA INFINITE LOOP OBSERVER & PRO LIGHTBOX
+     **********************************************************************/
+    let activeAudio = null;
+    let activePlayerEl = null;
+
+    function isStreamableVideoFile(fileName) {
+      return /\.(mp4|mov|webm|3gp|m4v|ogv)$/i.test(fileName || '');
+    }
+
+    function isGifLikeMedia(fileName) {
+      const lower = (fileName || '').toLowerCase();
+      return lower.endsWith('.gif') || lower.includes('-gif-') || lower.includes('gif');
+    }
+
+    // =========================================================================
+    // HIGH-PERFORMANCE MEDIA ENGINE: MAX 2 CONCURRENT PLAYING VIDEOS + SCOPED OBSERVERS
+    // =========================================================================
+    const activePlayingVideos = new Set();
+    const MAX_CONCURRENT_VIDEOS = 2;
+
+    function playMediaVideo(vid) {
+      if (!vid || vid.dataset.userPaused) return;
+      if (activePlayingVideos.has(vid) && !vid.paused) return;
+
+      while (activePlayingVideos.size >= MAX_CONCURRENT_VIDEOS) {
+        const oldest = activePlayingVideos.values().next().value;
+        if (oldest) {
+          try { oldest.pause(); } catch (e) {}
+          activePlayingVideos.delete(oldest);
+        }
+      }
+
+      vid.muted = true;
+      vid.play().then(() => {
+        activePlayingVideos.add(vid);
+      }).catch(() => {});
+    }
+
+    function pauseMediaVideo(vid) {
+      if (!vid) return;
+      try { vid.pause(); } catch (e) {}
+      activePlayingVideos.delete(vid);
+    }
+
+    function pauseAllDrawerVideos() {
+      const drawerEl = document.getElementById('drawerContent');
+      if (drawerEl) {
+        drawerEl.querySelectorAll('video').forEach(v => pauseMediaVideo(v));
+      }
+    }
+
+    let drawerObserver = null;
+    let chatObserver = null;
+
+    function getDrawerObserver() {
+      if (drawerObserver) return drawerObserver;
+      const root = document.getElementById('drawerContent');
+      if (!root || !('IntersectionObserver' in window)) return null;
+
+      drawerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (el.tagName === 'VIDEO') {
+            if (entry.isIntersecting) {
+              playMediaVideo(el);
+            } else {
+              pauseMediaVideo(el);
+            }
+          }
+        });
+      }, {
+        root: root,
+        threshold: 0.25
+      });
+      return drawerObserver;
+    }
+
+    function getChatObserver() {
+      if (chatObserver) return chatObserver;
+      const root = document.getElementById('chatScroll');
+      if (!root || !('IntersectionObserver' in window)) return null;
+
+      chatObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (el.tagName === 'VIDEO') {
+            if (entry.isIntersecting) {
+              playMediaVideo(el);
+            } else {
+              pauseMediaVideo(el);
+            }
+          }
+        });
+      }, {
+        root: root,
+        threshold: 0.25
+      });
+      return chatObserver;
+    }
+
+    function observeViewableMedia(container, isDrawer = false) {
+      if (!container) return;
+      const observer = isDrawer ? getDrawerObserver() : getChatObserver();
+
+      container.querySelectorAll('video.wa-viewable-video').forEach(vid => {
+        vid.loop = true;
+        vid.playsInline = true;
+        vid.preload = 'metadata';
+        if (!vid.dataset.loopBound) {
+          vid.dataset.loopBound = '1';
+          vid.addEventListener('ended', () => {
+            vid.currentTime = 0;
+            playMediaVideo(vid);
+          });
+        }
+        if (observer) {
+          observer.observe(vid);
+        }
+      });
+    }
+    function bindMediaEvents(container) {
+      observeViewableMedia(container);
+
+
+      container.querySelectorAll('[data-lightbox-id]').forEach(el => {
+        el.addEventListener('click', () => openLightboxByMsgId(Number(el.dataset.lightboxId)));
+      });
+
+      container.querySelectorAll('.voice-player').forEach(playerEl => {
+        const url = playerEl.dataset.audioUrl;
+        const playBtn = playerEl.querySelector('.voice-play-btn');
+        const playIcon = playerEl.querySelector('.play-icon');
+        const pauseIcon = playerEl.querySelector('.pause-icon');
+        const timeLabel = playerEl.querySelector('.voice-time');
+        const speedBtn = playerEl.querySelector('.voice-speed-btn');
+        const seekWrap = playerEl.querySelector('.voice-SeekWrap');
+        const bars = Array.from(playerEl.querySelectorAll('.voice-bar'));
+
+        let audio = null;
+        let speedIdx = 0;
+        const speeds = [1, 1.5, 2];
+
+        function updateBars(ratio) {
+          const activeCount = Math.floor(ratio * bars.length);
+          bars.forEach((b, idx) => {
+            b.classList.toggle('opacity-100', idx <= activeCount);
+            b.classList.toggle('opacity-40', idx > activeCount);
+          });
+        }
+
+        function formatSec(sec) {
+          if (!isFinite(sec) || sec < 0) return '0:00';
+          const m = Math.floor(sec / 60);
+          const s = Math.floor(sec % 60);
+          return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        playBtn.addEventListener('click', () => {
+          if (activeAudio && activePlayerEl !== playerEl) activeAudio.pause();
+          if (!audio) {
+            audio = new Audio(url);
+            audio.playbackRate = speeds[speedIdx];
+            audio.addEventListener('loadedmetadata', () => { timeLabel.textContent = formatSec(audio.duration); });
+            audio.addEventListener('timeupdate', () => {
+              const dur = audio.duration || 1;
+              updateBars(audio.currentTime / dur);
+              timeLabel.textContent = `${formatSec(audio.currentTime)} / ${formatSec(dur)}`;
+            });
+            audio.addEventListener('pause', () => { playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden'); });
+            audio.addEventListener('play', () => { playIcon.classList.add('hidden'); pauseIcon.classList.remove('hidden'); });
+            audio.addEventListener('ended', () => { playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden'); updateBars(0); });
+          }
+          if (audio.paused) {
+            activeAudio = audio;
+            activePlayerEl = playerEl;
+            audio.play();
+          } else {
+            audio.pause();
+          }
+        });
+
+        seekWrap.addEventListener('click', (e) => {
+          if (!audio || !audio.duration) return;
+          const rect = seekWrap.getBoundingClientRect();
+          const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          audio.currentTime = ratio * audio.duration;
+          updateBars(ratio);
+        });
+
+        speedBtn.addEventListener('click', () => {
+          speedIdx = (speedIdx + 1) % speeds.length;
+          speedBtn.textContent = `${speeds[speedIdx]}x`;
+          if (audio) audio.playbackRate = speeds[speedIdx];
+        });
+      });
+    }
+
+    function openLightboxByMsgId(msgId) {
+      const idx = state.lightboxItems.findIndex(m => m.id === msgId);
+      if (idx === -1) return;
+      state.lightboxIndex = idx;
+      state.lightboxZoom = 1;
+      renderLightboxSlide();
+      document.getElementById('lightboxModal').classList.remove('hidden');
+    }
+
+    function renderLightboxSlide() {
+      const msg = state.lightboxItems[state.lightboxIndex];
+      if (!msg) return;
+      const url = mediaUrlFor(msg.attFile);
+
+      state.lightboxZoom = 1;
+      const stage = document.getElementById('lightboxStage');
+      stage.style.transform = 'scale(1)';
+      document.getElementById('lightboxResetZoomBtn').textContent = '100%';
+
+      document.getElementById('lightboxTitle').textContent = msg.attFile;
+      document.getElementById('lightboxMeta').textContent = `${msg.sender || 'System'} • ${msg.dateStr} at ${msg.timeStr}`;
+      document.getElementById('lightboxCaption').textContent = msg.text || '';
+
+      const dlBtn = document.getElementById('lightboxDownloadBtn');
+      dlBtn.href = url;
+      dlBtn.download = msg.attFile;
+
+      if (msg.attType === 'video') {
+        if (isStreamableVideoFile(msg.attFile)) {
+          stage.innerHTML = `<video id="lightboxActiveVideo" src="${url}" controls autoplay loop playsinline class="w-[84vw] h-[74vh] max-w-[1280px] max-h-[76vh] object-contain rounded-xl shadow-2xl bg-black/50"></video>`;
+          const lbVid = document.getElementById('lightboxActiveVideo');
+          if (lbVid) {
+            lbVid.loop = true;
+            lbVid.addEventListener('ended', () => {
+              lbVid.currentTime = 0;
+              lbVid.play().catch(() => {});
+            });
+            lbVid.play().catch(() => {
+              lbVid.muted = true;
+              lbVid.play().catch(() => {});
+            });
+          }
+        } else {
+          stage.innerHTML = `<img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="wa-loop-img w-[84vw] h-[74vh] max-w-[1280px] max-h-[76vh] object-contain rounded-xl shadow-2xl" />`;
+        }
+      } else if (msg.attType === 'sticker') {
+        stage.innerHTML = `<img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="wa-sticker-img wa-loop-img w-[55vw] h-[55vh] max-w-[460px] max-h-[460px] object-contain drop-shadow-2xl" />`;
+      } else {
+        stage.innerHTML = `<img src="${url}" decoding="sync" loading="eager" alt="${escapeHtml(msg.attFile)}" class="w-[84vw] h-[74vh] max-w-[1280px] max-h-[76vh] object-contain rounded-lg shadow-2xl" />`;
+      }
+
+      // Render Filmstrip (window of 11 items around current)
+      const strip = document.getElementById('lightboxFilmstrip');
+      strip.innerHTML = '';
+      const fStart = Math.max(0, state.lightboxIndex - 5);
+      const fEnd = Math.min(state.lightboxItems.length, fStart + 11);
+      for (let i = fStart; i < fEnd; i++) {
+        const item = state.lightboxItems[i];
+        const thumbUrl = mediaUrlFor(item.attFile);
+        const btn = document.createElement('button');
+        const active = i === state.lightboxIndex;
+        btn.className = `w-12 h-12 rounded-lg overflow-hidden border-2 shrink-0 relative transition ${active ? 'border-emerald-400 scale-105' : 'border-white/20 opacity-60 hover:opacity-100'}`;
+        if (item.attType === 'video') {
+          if (isStreamableVideoFile(item.attFile)) {
+            btn.innerHTML = `<video src="${thumbUrl}" muted playsinline preload="metadata" class="w-full h-full object-cover"></video><span class="absolute inset-0 flex items-center justify-center bg-black/30 text-[12px]">🎬</span>`;
+          } else {
+            btn.innerHTML = `<img src="${thumbUrl}" class="w-full h-full object-cover" /><span class="absolute inset-0 flex items-center justify-center bg-black/30 text-[12px]">🎬</span>`;
+          }
+        } else {
+          btn.innerHTML = `<img src="${thumbUrl}" class="w-full h-full object-cover" />`;
+        }
+        btn.addEventListener('click', () => {
+          state.lightboxIndex = i;
+          renderLightboxSlide();
+        });
+        strip.appendChild(btn);
+      }
+    }
+
+    document.getElementById('lightboxViewport').addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.2 : -0.2;
+      state.lightboxZoom = Math.max(0.5, Math.min(5, state.lightboxZoom + delta));
+      document.getElementById('lightboxStage').style.transform = `scale(${state.lightboxZoom.toFixed(2)})`;
+      document.getElementById('lightboxResetZoomBtn').textContent = `${Math.round(state.lightboxZoom * 100)}%`;
+    });
+
+    document.getElementById('lightboxResetZoomBtn').addEventListener('click', () => {
+      state.lightboxZoom = 1;
+      document.getElementById('lightboxStage').style.transform = 'scale(1)';
+      document.getElementById('lightboxResetZoomBtn').textContent = '100%';
+    });
+
+    /**********************************************************************
+     * 5. RIGHT SIDEBAR DRAWER (All Media, Photos, Stickers, Voice, Stats)
+     * Divided by Date in Chronological Order
+     **********************************************************************/
+    function groupMessagesByDate(items) {
+      const groups = [];
+      let currentGroup = null;
+      for (let i = 0; i < items.length; i++) {
+        const m = items[i];
+        const d = m.dateStr || 'Unknown Date';
+        if (!currentGroup || currentGroup.date !== d) {
+          currentGroup = { date: d, firstMsgId: m.id, items: [] };
+          groups.push(currentGroup);
+        }
+        currentGroup.items.push(m);
+      }
+      return groups;
+    }
+
+    function createMediaTileElement(m) {
+      const url = m.attLinked && m.attFile ? mediaUrlFor(m.attFile) : '';
+      const cell = document.createElement('div');
+      const isSticker = m.attType === 'sticker';
+      const isVideo = m.attType === 'video';
+      const badgeIcon = isSticker ? '✨' : (isVideo ? '🎬' : '📷');
+
+      if (url && isVideo) {
+        // Videos & GIFs render as a full-width widescreen theater card in the right media bar (never a tiny square!)
+        cell.className = 'col-span-full aspect-video min-h-[195px] rounded-xl overflow-hidden bg-black/55 border border-[var(--border)] hover:border-emerald-500/70 cursor-pointer relative group flex items-center justify-center shadow-md';
+        const isStreamVideo = isStreamableVideoFile(m.attFile);
+        const isGif = isGifLikeMedia(m.attFile);
+        const labelText = isGif ? '🎬 GIF • ∞ LOOP' : '🎬 VIDEO • ∞ LOOP';
+
+        if (isStreamVideo) {
+          cell.innerHTML = `
+            <video src="${url}" loop muted playsinline preload="metadata" class="wa-viewable-video w-full h-full object-contain bg-black/40"></video>
+            <span class="absolute top-2 left-2 text-[12px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-emerald-400 pointer-events-none shadow">${labelText}</span>
+            <div class="absolute top-2 right-2 flex items-center gap-1.5">
+              <button class="mute-toggle-btn px-2 py-0.5 rounded-md bg-black/70 hover:bg-black/90 text-white text-[12px] font-semibold shadow transition" title="Toggle audio">🔇</button>
+              <button class="expand-lb-btn px-2 py-0.5 rounded-md bg-emerald-600/90 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Open large theater player">⛶ Full View</button>
+              <button class="jump-msg-btn px-2 py-0.5 rounded-md bg-black/70 hover:bg-emerald-600 text-white text-[12px] font-bold shadow transition" title="Jump to message in chat">↗</button>
+            </div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-2.5 py-1.5 flex items-center justify-between text-[12px] text-white/95 pointer-events-none">
+              <span class="truncate font-medium">${escapeHtml(m.sender || '')} — ${escapeHtml(m.attFile || '')}</span>
+              <span class="font-mono shrink-0 ml-2">${escapeHtml(m.timeStr)}</span>
+            </div>
+          `;
+        } else {
+          cell.innerHTML = `
+            <img src="${url}" loading="lazy" decoding="async" class="wa-loop-img w-full h-full object-contain bg-black/40 group-hover:scale-[1.01] transition duration-200" />
+            <span class="absolute top-2 left-2 text-[12px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-emerald-400 pointer-events-none shadow">${labelText}</span>
+            <div class="absolute top-2 right-2 flex items-center gap-1.5">
+              <button class="expand-lb-btn px-2 py-0.5 rounded-md bg-emerald-600/90 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Open large theater player">⛶ Full View</button>
+              <button class="jump-msg-btn px-2 py-0.5 rounded-md bg-black/70 hover:bg-emerald-600 text-white text-[12px] font-bold shadow transition" title="Jump to message in chat">↗</button>
+            </div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-2.5 py-1.5 flex items-center justify-between text-[12px] text-white/95 pointer-events-none">
+              <span class="truncate font-medium">${escapeHtml(m.sender || '')} — ${escapeHtml(m.attFile || '')}</span>
+              <span class="font-mono shrink-0 ml-2">${escapeHtml(m.timeStr)}</span>
+            </div>
+          `;
+        }
+
+        cell.addEventListener('click', (e) => {
+          const muteBtn = e.target.closest('.mute-toggle-btn');
+          if (muteBtn) {
+            e.stopPropagation();
+            const v = cell.querySelector('video');
+            if (v) {
+              v.muted = !v.muted;
+              muteBtn.textContent = v.muted ? '🔇' : '🔊';
+            }
+            return;
+          }
+          if (e.target.closest('.jump-msg-btn')) {
+            e.stopPropagation();
+            jumpToMessageId(m.id);
+            return;
+          }
+          openLightboxByMsgId(m.id);
+        });
+        return cell;
+      }
+
+      cell.className = 'aspect-square rounded-xl overflow-hidden bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500/60 cursor-pointer relative group flex items-center justify-center';
+
+      if (url && isSticker) {
+        cell.innerHTML = `
+          <img src="${url}" loading="lazy" decoding="async" class="w-4/5 h-4/5 object-contain wa-sticker-img wa-loop-img" />
+          <span class="absolute top-1 left-1 text-[12px] px-1 rounded bg-black/50 text-white/90 pointer-events-none">${badgeIcon}</span>
+          <button class="jump-msg-btn opacity-0 group-hover:opacity-100 absolute top-1 right-1 px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Jump to message in chat">↗</button>
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-1.5 py-1 flex items-center justify-between text-[12px] text-white/90 pointer-events-none">
+            <span class="truncate">${escapeHtml(m.sender || '')}</span>
+            <span class="font-mono shrink-0 ml-1">${escapeHtml(m.timeStr)}</span>
+          </div>
+        `;
+        cell.addEventListener('click', (e) => {
+          if (e.target.closest('.jump-msg-btn')) {
+            e.stopPropagation();
+            jumpToMessageId(m.id);
+            return;
+          }
+          openLightboxByMsgId(m.id);
+        });
+      } else if (url && m.attType === 'photo') {
+        cell.innerHTML = `
+          <img src="${url}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" />
+          <span class="absolute top-1 left-1 text-[12px] px-1 rounded bg-black/50 text-white/90 pointer-events-none">${badgeIcon}</span>
+          <button class="jump-msg-btn opacity-0 group-hover:opacity-100 absolute top-1 right-1 px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[12px] font-bold shadow transition" title="Jump to message in chat">↗</button>
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-1.5 py-1 flex items-center justify-between text-[12px] text-white/90 pointer-events-none">
+            <span class="truncate">${escapeHtml(m.sender || '')}</span>
+            <span class="font-mono shrink-0 ml-1">${escapeHtml(m.timeStr)}</span>
+          </div>
+        `;
+        cell.addEventListener('click', (e) => {
+          if (e.target.closest('.jump-msg-btn')) {
+            e.stopPropagation();
+            jumpToMessageId(m.id);
+            return;
+          }
+          openLightboxByMsgId(m.id);
+        });
+      } else {
+        cell.innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center text-xs text-[var(--muted-foreground)] p-2 text-center break-all">
+            <span class="text-base mb-1">${badgeIcon}</span>
+            <span class="line-clamp-2">${escapeHtml(m.attFile || 'Omitted')}</span>
+          </div>`;
+        cell.addEventListener('click', () => jumpToMessageId(m.id));
+      }
+
+      return cell;
+    }
+
+    function renderDateDividedVisualMedia(box, rawList, emptyText) {
+      if (rawList.length === 0) {
+        box.innerHTML = `<p class="text-xs text-[var(--muted-foreground)] text-center py-8">${escapeHtml(emptyText)}</p>`;
+        return;
+      }
+
+      // Chronological (Oldest -> Newest) vs Newest First
+      const ordered = state.drawerSortChronological ? rawList : rawList.slice().reverse();
+      const totalItems = ordered.length;
+      const sliced = ordered.slice(0, state.drawerRenderLimit);
+      const dateGroups = groupMessagesByDate(sliced);
+
+      // Summary banner at top of drawer
+      const summaryBar = document.createElement('div');
+      summaryBar.className = 'flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs text-[var(--muted-foreground)]';
+      summaryBar.innerHTML = `
+        <span>Showing <strong class="text-[var(--foreground)]">${sliced.length.toLocaleString()}</strong> of <strong class="text-emerald-400">${totalItems.toLocaleString()}</strong> items</span>
+        <span>${state.drawerSortChronological ? 'Chronological ↑' : 'Newest First ↓'}</span>
+      `;
+      box.appendChild(summaryBar);
+
+      const gridColsClass = state.drawerWide ? 'grid grid-cols-4 gap-2 grid-flow-row-dense' : 'grid grid-cols-3 gap-2 grid-flow-row-dense';
+
+      dateGroups.forEach(group => {
+        const section = document.createElement('div');
+        section.className = 'space-y-2';
+
+        // Date Divider Header
+        const dateHeader = document.createElement('div');
+        dateHeader.className = 'sticky top-0 z-10 flex items-center justify-between px-3 py-1.5 rounded-lg bg-[var(--card)]/95 border border-[var(--border)] backdrop-blur-sm shadow-sm cursor-pointer hover:border-emerald-500/50 transition';
+        dateHeader.title = 'Click to jump to this date in the chat';
+        dateHeader.innerHTML = `
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs">📅</span>
+            <span class="text-xs font-bold text-emerald-400">${escapeHtml(group.date)}</span>
+          </div>
+          <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-[var(--background)] text-[var(--muted-foreground)]">${group.items.length} ${group.items.length === 1 ? 'item' : 'items'}</span>
+        `;
+        dateHeader.addEventListener('click', () => jumpToMessageId(group.firstMsgId));
+        section.appendChild(dateHeader);
+
+        const grid = document.createElement('div');
+        grid.className = gridColsClass;
+        group.items.forEach(m => {
+          grid.appendChild(createMediaTileElement(m));
+        });
+        section.appendChild(grid);
+
+        box.appendChild(section);
+      });
+
+      if (totalItems > state.drawerRenderLimit) {
+        const moreBtn = document.createElement('button');
+        moreBtn.className = 'w-full py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 text-xs font-bold transition';
+        moreBtn.textContent = `Load next ${Math.min(60, totalItems - state.drawerRenderLimit)} items (${(totalItems - state.drawerRenderLimit).toLocaleString()} remaining)...`;
+        moreBtn.addEventListener('click', () => {
+          state.drawerRenderLimit += 60;
+          renderDrawer(true);
+        });
+        box.appendChild(moreBtn);
+      }
+
+      observeViewableMedia(box, true);
+    }
+
+    function renderDrawer(preserveDrawerScroll = false) {
+      pauseAllDrawerVideos();
+      const box = document.getElementById('drawerContent');
+      const prevScroll = preserveDrawerScroll ? box.scrollTop : 0;
+      box.innerHTML = '';
+
+      // 1. ALL MEDIA (Every Photo, Video, and Sticker in chronological order divided by date)
+      if (state.activeDrawerTab === 'all_media') {
+        const allVisualMsgs = state.messages.filter(m => m.attType === 'photo' || m.attType === 'video' || m.attType === 'sticker');
+        renderDateDividedVisualMedia(box, allVisualMsgs, 'No photos, videos, or stickers in this chat.');
+        if (preserveDrawerScroll) box.scrollTop = prevScroll;
+        return;
+      }
+
+      // 2. PHOTOS & VIDEOS (Divided by date in chronological order)
+      if (state.activeDrawerTab === 'media') {
+        const mediaMsgs = state.messages.filter(m => m.attType === 'photo' || m.attType === 'video');
+        renderDateDividedVisualMedia(box, mediaMsgs, 'No photos or videos in this chat.');
+        if (preserveDrawerScroll) box.scrollTop = prevScroll;
+        return;
+      }
+
+      // 3. STICKERS (Divided by date in chronological order)
+      if (state.activeDrawerTab === 'stickers') {
+        const stickerMsgs = state.messages.filter(m => m.attType === 'sticker');
+        renderDateDividedVisualMedia(box, stickerMsgs, 'No stickers found in this chat.');
+        if (preserveDrawerScroll) box.scrollTop = prevScroll;
+        return;
+      }
+
+      // 4. VOICE & DOCS (Divided by date in chronological order)
+      if (state.activeDrawerTab === 'audio') {
+        const rawAudio = state.messages.filter(m => m.attType === 'audio' || m.attType === 'document' || m.attType === 'vcard');
+        if (rawAudio.length === 0) {
+          box.innerHTML = `<p class="text-xs text-[var(--muted-foreground)] text-center py-8">No voice notes or documents found.</p>`;
+          return;
+        }
+        const ordered = state.drawerSortChronological ? rawAudio : rawAudio.slice().reverse();
+        const groups = groupMessagesByDate(ordered.slice(0, state.drawerRenderLimit));
+
+        groups.forEach(group => {
+          const section = document.createElement('div');
+          section.className = 'space-y-1.5';
+
+          const dateHeader = document.createElement('div');
+          dateHeader.className = 'sticky top-0 z-10 flex items-center justify-between px-3 py-1.5 rounded-lg bg-[var(--card)]/95 border border-[var(--border)] backdrop-blur-sm shadow-sm';
+          dateHeader.innerHTML = `
+            <span class="text-xs font-bold text-emerald-400">📅 ${escapeHtml(group.date)}</span>
+            <span class="text-xs font-mono text-[var(--muted-foreground)]">${group.items.length} ${group.items.length === 1 ? 'file' : 'files'}</span>
+          `;
+          section.appendChild(dateHeader);
+
+          group.items.forEach(m => {
+            const item = document.createElement('div');
+            item.className = 'p-2.5 rounded-xl bg-[var(--background)] border border-[var(--border)] hover:border-emerald-500/50 cursor-pointer flex items-center justify-between gap-2';
+            const icon = m.attType === 'audio' ? '🎙️' : (m.attType === 'vcard' ? '👤' : '📄');
+            item.innerHTML = `<div class="flex items-center gap-2.5 min-w-0"><span class="text-base">${icon}</span><div class="min-w-0"><div class="text-xs font-semibold text-[var(--foreground)] truncate">${escapeHtml(m.attFile || 'Attachment')}</div><div class="text-xs text-[var(--muted-foreground)] truncate">${escapeHtml(m.sender || '')} • ${escapeHtml(m.timeStr)}</div></div></div><span class="text-xs text-emerald-400 font-medium shrink-0">Jump →</span>`;
+            item.addEventListener('click', () => jumpToMessageId(m.id));
+            section.appendChild(item);
+          });
+
+          box.appendChild(section);
+        });
+        if (preserveDrawerScroll) box.scrollTop = prevScroll;
+        return;
+      }
+
+      // 5. STATS & PARTICIPANTS
+      if (state.activeDrawerTab === 'stats') {
+        const total = state.messages.length || 1;
+        const maxHour = Math.max(1, ...state.hourHistogram);
+
+        const hourBars = state.hourHistogram.map((cnt, hr) => {
+          const hPct = Math.max(8, Math.round((cnt / maxHour) * 100));
+          return `<div class="flex-1 flex flex-col items-center gap-1" title="${hr}:00 — ${cnt.toLocaleString()} msgs"><div class="w-full bg-emerald-500/75 hover:bg-emerald-400 rounded-t transition" style="height:${hPct}%"></div></div>`;
+        }).join('');
+
+        const chartCard = document.createElement('div');
+        chartCard.className = 'p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2';
+        chartCard.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-[var(--foreground)]">Activity by Hour (0h–23h)</span>
+            <span class="text-xs font-mono text-emerald-400">${state.messages.length.toLocaleString()} msgs</span>
+          </div>
+          <div class="h-14 flex items-end gap-0.5 pt-2 border-b border-[var(--border)]">${hourBars}</div>
+          <div class="flex justify-between text-xs text-[var(--muted-foreground)] font-mono">
+            <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>11pm</span>
+          </div>
+        `;
+        box.appendChild(chartCard);
+
+        state.participants.forEach(p => {
+          const pct = Math.round((p.count / total) * 100);
+          const isMe = p.name === state.meSender;
+          const card = document.createElement('div');
+          card.className = `p-3 rounded-xl bg-[var(--background)] border ${isMe ? 'border-emerald-500' : 'border-[var(--border)]'} cursor-pointer transition`;
+          card.innerHTML = `
+            <div class="flex items-center justify-between mb-1">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${p.color}"></span>
+                <span class="text-xs font-bold text-[var(--foreground)] truncate">${escapeHtml(p.name)}</span>
+                ${isMe ? '<span class="text-xs px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold">You</span>' : ''}
+              </div>
+              <span class="text-xs font-semibold text-[var(--muted-foreground)]">${p.count.toLocaleString()} (${pct}%)</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-black/25 overflow-hidden mb-1.5"><div class="h-full rounded-full" style="width:${pct}%; background:${p.color}"></div></div>
+            <div class="flex justify-between text-xs text-[var(--muted-foreground)]"><span>${p.words.toLocaleString()} words</span><span>${p.mediaCount.toLocaleString()} media</span></div>`;
+          card.addEventListener('click', () => {
+            state.meSender = p.name;
+            const pSel = document.getElementById('settingsPerspectiveSelect');
+            if (pSel) pSel.value = p.name;
+            const chatSub = document.getElementById('chatSubtitle');
+            if (chatSub) chatSub.textContent = `Viewing as: ${p.name} â€¢ ${state.participants.length} participants`;
+            renderVisibleWindow();
+            renderDrawer();
+          });
+          box.appendChild(card);
+        });
+      }
+    }
+
+    /**********************************************************************
+     * 6. NATIVE TRADITIONAL SCROLLBAR & VIRTUAL WINDOW ENGINE
+     **********************************************************************/
+    const chatScroll = document.getElementById('chatScroll');
+    const floatingDatePill = document.getElementById('floatingDatePill');
+    const floatingDateText = document.getElementById('floatingDateText');
+    const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+    let scrollTimer = null;
+    let isWindowUpdating = false;
+    let scrollRafId = null;
+
+    chatScroll.addEventListener('scroll', () => {
+      const total = state.filteredMessages.length;
+      if (total === 0) return;
+
+      const scrollTop = chatScroll.scrollTop;
+      const clientH = chatScroll.clientHeight;
+      const scrollH = chatScroll.scrollHeight;
+      const distFromBottom = scrollH - scrollTop - clientH;
+
+      // Toggle scroll to bottom button
+      const atVeryBottom = distFromBottom < 220;
+      scrollToBottomBtn.classList.toggle('hidden', atVeryBottom);
+
+      // Calculate approximate message index centered in viewport
+      const centerIdx = Math.max(0, Math.min(total - 1, Math.floor((scrollTop + (clientH / 2)) / AVG_ROW_HEIGHT)));
+
+      // Display floating date pill while scrolling
+      const msg = state.filteredMessages[centerIdx];
+      if (msg) {
+        floatingDateText.textContent = `${msg.dateStr} \u2022 #${(centerIdx + 1).toLocaleString()} of ${total.toLocaleString()}`;
+        floatingDatePill.classList.remove('opacity-0');
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => floatingDatePill.classList.add('opacity-0'), 1100);
+      }
+
+      // Check if visible window needs to shift
+      if (total > state.windowSize && !isWindowUpdating) {
+        const windowCenter = Math.floor((state.renderStart + state.renderEnd) / 2);
+        const shiftDistance = Math.abs(centerIdx - windowCenter);
+
+        // When scrolled more than 28 messages away from current window center, re-center window
+        if (shiftDistance > 28) {
+          if (scrollRafId) cancelAnimationFrame(scrollRafId);
+          scrollRafId = requestAnimationFrame(() => {
+            if (isWindowUpdating) return;
+            isWindowUpdating = true;
+
+            const half = Math.floor(state.windowSize / 2);
+            const newStart = Math.max(0, Math.min(total - state.windowSize, centerIdx - half));
+            const newEnd = Math.min(total, newStart + state.windowSize);
+
+            if (newStart !== state.renderStart || newEnd !== state.renderEnd) {
+              // Find an anchor currently in viewport for seamless pixel-lock during normal wheel scrolling
+              let anchorEl = null;
+              let prevOffset = 0;
+              const isHugeJump = shiftDistance > (state.windowSize * 0.7);
+
+              if (!isHugeJump) {
+                const area = document.getElementById('virtualMessagesArea');
+                if (area) {
+                  const rows = area.querySelectorAll('[data-idx]');
+                  const containerTop = chatScroll.getBoundingClientRect().top;
+                  for (const r of rows) {
+                    const rect = r.getBoundingClientRect();
+                    if (rect.top >= containerTop - 20 && rect.bottom > containerTop) {
+                      anchorEl = r;
+                      prevOffset = rect.top;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              const anchorId = anchorEl ? anchorEl.id : null;
+              state.renderStart = newStart;
+              state.renderEnd = newEnd;
+              renderVisibleWindow();
+
+              // Compensate micro-height delta for seamless scrolling
+              if (anchorId && !isHugeJump) {
+                const newAnchor = document.getElementById(anchorId);
+                if (newAnchor) {
+                  const newOffset = newAnchor.getBoundingClientRect().top;
+                  chatScroll.scrollTop += (newOffset - prevOffset);
+                }
+              }
+            }
+
+            isWindowUpdating = false;
+          });
+        }
+      }
+    }, { passive: true });
+
+    function scrollToBottom(smooth = true) {
+      const total = state.filteredMessages.length;
+      if (total === 0) return;
+      if (state.renderEnd < total) {
+        state.renderEnd = total;
+        state.renderStart = Math.max(0, total - state.windowSize);
+        renderVisibleWindow();
+      }
+      chatScroll.scrollTo({ top: chatScroll.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+    }
+
+    function jumpToMessageId(msgId) {
+      let idx = state.filteredMessages.findIndex(m => m.id === msgId);
+      if (idx === -1) {
+        state.activeFilter = 'all';
+        state.searchQuery = '';
+        const searchInput = document.getElementById('chatSearchInput');
+        if (searchInput) searchInput.value = '';
+        const searchCountLabel = document.getElementById('searchCountLabel');
+        if (searchCountLabel) searchCountLabel.textContent = '';
+        const searchBar = document.getElementById('searchBar');
+        if (searchBar) searchBar.classList.add('hidden');
+        updateFilterButtonsUI();
+        state.filteredMessages = state.messages;
+        idx = state.filteredMessages.findIndex(m => m.id === msgId);
+      }
+      if (idx === -1) return;
+
+      const total = state.filteredMessages.length;
+      const half = Math.floor(state.windowSize / 2);
+      state.renderStart = Math.max(0, Math.min(Math.max(0, total - state.windowSize), idx - half));
+      state.renderEnd = Math.min(total, state.renderStart + state.windowSize);
+
+      // Lock window shift during jump
+      isWindowUpdating = true;
+      renderVisibleWindow();
+
+      // Measure exact DOM offset inside #chatScroll
+      const targetEl = document.getElementById(`msg-${msgId}`);
+      if (targetEl) {
+        const targetScrollTop = Math.max(0, targetEl.offsetTop - (chatScroll.clientHeight / 2) + (targetEl.clientHeight / 2));
+        chatScroll.scrollTop = targetScrollTop;
+
+        const bubble = targetEl.querySelector('.wa-bubble-in, .wa-bubble-out, .wa-bubble-in-cont, .wa-bubble-out-cont') || targetEl.firstElementChild || targetEl;
+        if (bubble) {
+          bubble.classList.remove('msg-jump-highlight');
+          void bubble.offsetWidth;
+          bubble.classList.add('msg-jump-highlight');
+        }
+      } else {
+        const estimatedTop = Math.max(0, (idx * AVG_ROW_HEIGHT) - (chatScroll.clientHeight / 2));
+        chatScroll.scrollTop = estimatedTop;
+      }
+
+      setTimeout(() => {
+        isWindowUpdating = false;
+      }, 350);
+    }
+
+    /**********************************************************************
+     * 7. SEARCH & UI CONTROLS
+     **********************************************************************/
+    function runSearch(query) {
+      state.searchQuery = query;
+      state.searchHits = [];
+      state.searchCursor = -1;
+      const q = query.trim().toLowerCase();
+      const countLabel = document.getElementById('searchCountLabel');
+
+      if (!q) {
+        countLabel.textContent = '';
+        renderVisibleWindow();
+        return;
+      }
+
+      for (let i = 0; i < state.filteredMessages.length; i++) {
+        const m = state.filteredMessages[i];
+        if (
+          (m.text && m.text.toLowerCase().includes(q)) ||
+          (m.sender && m.sender.toLowerCase().includes(q)) ||
+          (m.attFile && m.attFile.toLowerCase().includes(q))
+        ) {
+          state.searchHits.push(m.id);
+        }
+      }
+
+      if (state.searchHits.length === 0) {
+        countLabel.textContent = '0 matches';
+        renderVisibleWindow();
+        return;
+      }
+
+      state.searchCursor = state.searchHits.length - 1;
+      countLabel.textContent = `${state.searchCursor + 1} / ${state.searchHits.length.toLocaleString()}`;
+      renderVisibleWindow();
+      jumpToMessageId(state.searchHits[state.searchCursor]);
+    }
+
+    function updateFilterButtonsUI() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const isActive = btn.dataset.filter === state.activeFilter;
+        btn.className = isActive
+          ? 'filter-btn text-xs px-2.5 py-1 rounded-md font-medium bg-emerald-600 text-white transition'
+          : 'filter-btn text-xs px-2 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      });
+    }
+
+    /**********************************************************************
+     * 7. CUSTOMIZATION & SETTINGS ENGINE (Themes, Fonts, Size, Density)
+     **********************************************************************/
+    const FONT_MAP = {
+      jakarta: "'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      inter: "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      outfit: "'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      lexend: "'Lexend', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      system: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    };
+
+    function applyAppTheme(themeName) {
+      const valid = ['emerald', 'sky', 'guild', 'bubble', 'gradient'];
+      const map = {
+        'whatsapp': 'emerald',
+        'telegram': 'sky',
+        'discord': 'guild',
+        'imessage': 'bubble',
+        'instagram': 'gradient'
+      };
+      const target = map[themeName] || (valid.includes(themeName) ? themeName : 'emerald');
+      document.documentElement.setAttribute('data-app-theme', target);
+
+      document.querySelectorAll('[data-settings-theme]').forEach(card => {
+        const isSelected = card.dataset.settingsTheme === target;
+        card.classList.toggle('border-emerald-500/80', isSelected);
+        card.classList.toggle('border-transparent', !isSelected);
+        card.classList.toggle('bg-[var(--card)]', isSelected);
+      });
+      localStorage.setItem('chatvault_theme', target);
+    }
+
+    function applyAppFont(fontKey) {
+      const chosenKey = FONT_MAP[fontKey] ? fontKey : 'jakarta';
+      document.documentElement.style.setProperty('--app-font-family', FONT_MAP[chosenKey]);
+
+      document.querySelectorAll('[data-font-key]').forEach(card => {
+        const isSelected = card.dataset.fontKey === chosenKey;
+        card.classList.toggle('border-emerald-500/80', isSelected);
+        card.classList.toggle('border-transparent', !isSelected);
+        card.classList.toggle('bg-[var(--card)]', isSelected);
+      });
+      localStorage.setItem('chatvault_font', chosenKey);
+    }
+
+    function applyAppFontSize(px) {
+      const size = Math.max(13, Math.min(17, parseInt(px, 10) || 14));
+      document.documentElement.style.setProperty('--chat-font-size', `${size}px`);
+      const slider = document.getElementById('fontSizeSlider');
+      if (slider) slider.value = size;
+      const disp = document.getElementById('fontSizeDisplay');
+      if (disp) disp.textContent = `${size}px`;
+      localStorage.setItem('chatvault_font_size', size);
+    }
+
+    function applyBubbleDensity(density) {
+      const densities = {
+        compact: { y: '5px', x: '8px' },
+        standard: { y: '7px', x: '10px' },
+        relaxed: { y: '10px', x: '14px' }
+      };
+      const d = densities[density] || densities.standard;
+      const key = densities[density] ? density : 'standard';
+      document.documentElement.style.setProperty('--bubble-padding-y', d.y);
+      document.documentElement.style.setProperty('--bubble-padding-x', d.x);
+
+      document.querySelectorAll('.density-btn').forEach(btn => {
+        const isSelected = btn.dataset.density === key;
+        btn.className = isSelected
+          ? 'density-btn py-1 rounded bg-[var(--card)] text-[var(--foreground)] font-semibold shadow-sm transition'
+          : 'density-btn py-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition';
+      });
+      localStorage.setItem('chatvault_density', key);
+    }
+
+    const MOON_SVG = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    const SUN_SVG = '<svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+
+    function toggleThemeMode() {
+      const isLight = document.documentElement.classList.toggle('light');
+      document.documentElement.classList.toggle('dark', !isLight);
+      const icon = document.getElementById('themeModeIcon');
+      const label = document.getElementById('themeModeLabel');
+      if (icon) icon.innerHTML = isLight ? SUN_SVG : MOON_SVG;
+      if (label) label.textContent = isLight ? 'Light' : 'Dark';
+      localStorage.setItem('chatvault_mode', isLight ? 'light' : 'dark');
+    }
+
+    function initSettingsFromStorage() {
+      const savedTheme = localStorage.getItem('chatvault_theme') || 'emerald';
+      applyAppTheme(savedTheme);
+
+      const savedMode = localStorage.getItem('chatvault_mode') || 'dark';
+      if (savedMode === 'light') {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      }
+      const icon = document.getElementById('themeModeIcon');
+      const label = document.getElementById('themeModeLabel');
+      if (icon) icon.innerHTML = savedMode === "light" ? SUN_SVG : MOON_SVG;
+      if (label) label.textContent = savedMode === 'light' ? 'Light' : 'Dark';
+
+      const savedFont = localStorage.getItem('chatvault_font') || 'jakarta';
+      applyAppFont(savedFont);
+
+      const savedSize = localStorage.getItem('chatvault_font_size') || 14;
+      applyAppFontSize(savedSize);
+
+      const savedDensity = localStorage.getItem('chatvault_density') || 'standard';
+      applyBubbleDensity(savedDensity);
+    }
+
+    // Settings Modal Triggers
+    const settingsModal = document.getElementById('settingsModal');
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const doneSettingsModalBtn = document.getElementById('doneSettingsModalBtn');
+
+    if (openSettingsBtn) openSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    if (closeSettingsModalBtn) closeSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+    if (doneSettingsModalBtn) doneSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+    const chatSubtitleBtn = document.getElementById('chatSubtitle');
+    if (chatSubtitleBtn) {
+      chatSubtitleBtn.addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+        const pSel = document.getElementById('settingsPerspectiveSelect');
+        if (pSel) pSel.focus();
+      });
+    }
+
+    // Theme Mode Toggle inside Settings
+    const themeModeToggleBtn = document.getElementById('themeModeToggleBtn');
+    if (themeModeToggleBtn) themeModeToggleBtn.addEventListener('click', toggleThemeMode);
+
+    // Theme Cards
+    document.querySelectorAll('[data-settings-theme]').forEach(card => {
+      card.addEventListener('click', () => applyAppTheme(card.dataset.settingsTheme));
+    });
+
+    // Font Cards
+    document.querySelectorAll('[data-font-key]').forEach(card => {
+      card.addEventListener('click', () => applyAppFont(card.dataset.fontKey));
+    });
+
+    // Font Size Slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    if (fontSizeSlider) {
+      fontSizeSlider.addEventListener('input', (e) => applyAppFontSize(e.target.value));
+    }
+
+    // Bubble Density Buttons
+    document.querySelectorAll('.density-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyBubbleDensity(btn.dataset.density));
+    });
+
+    // Perspective Selector inside Settings
+    function setPerspectiveSender(name) {
+      state.meSender = name;
+      const mainSel = document.getElementById('mainPerspectiveSelect');
+      const settingsSel = document.getElementById('settingsPerspectiveSelect');
+      if (mainSel && mainSel.value !== name) mainSel.value = name;
+      if (settingsSel && settingsSel.value !== name) settingsSel.value = name;
+      const chatSub = document.getElementById('chatSubtitle');
+      if (chatSub) chatSub.textContent = `Viewing as: ${name || 'Auto-detected'} â€¢ ${state.participants.length} participants`;
+      renderVisibleWindow();
+      renderDrawer();
+    }
+
+    const mainPerspectiveSelect = document.getElementById('mainPerspectiveSelect');
+    if (mainPerspectiveSelect) {
+      mainPerspectiveSelect.addEventListener('change', (e) => setPerspectiveSender(e.target.value));
+    }
+
+    const settingsPerspectiveSelect = document.getElementById('settingsPerspectiveSelect');
+    if (settingsPerspectiveSelect) {
+      settingsPerspectiveSelect.addEventListener('change', (e) => setPerspectiveSender(e.target.value));
+    }
+
+    const settingsPerspectiveResetBtn = document.getElementById('settingsPerspectiveResetBtn');
+    if (settingsPerspectiveResetBtn) {
+      settingsPerspectiveResetBtn.addEventListener('click', () => {
+        if (state.participants.length > 0) {
+          setPerspectiveSender(state.participants[0].name);
+        }
+      });
+    }
+    const settingsGiantTestBtn = document.getElementById('settingsGiantTestBtn');
+    if (settingsGiantTestBtn) {
+      settingsGiantTestBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('load_giant_demo');
+      });
+    }
+
+    const settingsResetDemoBtn = document.getElementById('settingsResetDemoBtn');
+    if (settingsResetDemoBtn) {
+      settingsResetDemoBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('load_demo');
+      });
+    }
+
+    const settingsAttachMediaBtn = document.getElementById('settingsAttachMediaBtn');
+    if (settingsAttachMediaBtn) {
+      settingsAttachMediaBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+        sendHostCommand('open_files');
+      });
+    }
+
+    // More Filters Dropdown in Header
+    const moreFiltersBtn = document.getElementById('moreFiltersBtn');
+    const moreFiltersMenu = document.getElementById('moreFiltersMenu');
+    if (moreFiltersBtn && moreFiltersMenu) {
+      moreFiltersBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        moreFiltersMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!moreFiltersMenu.contains(e.target) && e.target !== moreFiltersBtn) {
+          moreFiltersMenu.classList.add('hidden');
+        }
+      });
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.activeFilter = btn.dataset.filter;
+        updateFilterButtonsUI();
+        applyFilterAndRender(false);
+      });
+    });
+
+    document.querySelectorAll('.drawer-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        state.activeDrawerTab = tab.dataset.tab;
+        state.drawerRenderLimit = 60;
+        document.querySelectorAll('.drawer-tab').forEach(t => {
+          const active = t.dataset.tab === state.activeDrawerTab;
+          t.className = active
+            ? 'drawer-tab py-1.5 rounded-md bg-[var(--card)] text-[var(--foreground)] shadow-sm'
+            : 'drawer-tab py-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]';
+        });
+        renderDrawer();
+      });
+    });
+
+    const infoDrawer = document.getElementById('infoDrawer');
+    document.getElementById('toggleDrawerBtn').addEventListener('click', () => infoDrawer.classList.toggle('hidden'));
+    document.getElementById('closeDrawerBtn').addEventListener('click', () => infoDrawer.classList.add('hidden'));
+
+    const drawerSortBtn = document.getElementById('drawerSortBtn');
+    drawerSortBtn.addEventListener('click', () => {
+      state.drawerSortChronological = !state.drawerSortChronological;
+      drawerSortBtn.textContent = state.drawerSortChronological ? '📅 Oldest ↑' : '📅 Newest ↓';
+      renderDrawer();
+    });
+
+    const expandDrawerBtn = document.getElementById('expandDrawerBtn');
+    expandDrawerBtn.addEventListener('click', () => {
+      state.drawerWide = !state.drawerWide;
+      infoDrawer.classList.toggle('w-96', !state.drawerWide);
+      infoDrawer.classList.toggle('w-[520px]', state.drawerWide);
+      renderDrawer(true);
+    });
+
+    const drawerContentEl = document.getElementById('drawerContent');
+    drawerContentEl.addEventListener('scroll', () => {
+      if (state.activeDrawerTab === 'stats') return;
+      const dist = drawerContentEl.scrollHeight - drawerContentEl.scrollTop - drawerContentEl.clientHeight;
+      if (dist < 140) {
+        const totalPossible = state.messages.filter(m => m.attType).length;
+        if (state.drawerRenderLimit < totalPossible) {
+          state.drawerRenderLimit += 60;
+          renderDrawer(true);
+        }
+      }
+    });
+
+    const searchBar = document.getElementById('searchBar');
+    const searchInput = document.getElementById('searchInput');
+    document.getElementById('toggleSearchBtn').addEventListener('click', () => {
+      searchBar.classList.toggle('hidden');
+      if (!searchBar.classList.contains('hidden')) searchInput.focus();
+    });
+    document.getElementById('closeSearchBtn').addEventListener('click', () => {
+      searchBar.classList.add('hidden');
+      searchInput.value = '';
+      runSearch('');
+    });
+    searchInput.addEventListener('input', (e) => runSearch(e.target.value));
+
+    document.getElementById('searchPrevBtn').addEventListener('click', () => {
+      if (state.searchHits.length === 0) return;
+      state.searchCursor = (state.searchCursor - 1 + state.searchHits.length) % state.searchHits.length;
+      document.getElementById('searchCountLabel').textContent = `${state.searchCursor + 1} / ${state.searchHits.length.toLocaleString()}`;
+      jumpToMessageId(state.searchHits[state.searchCursor]);
+    });
+    document.getElementById('searchNextBtn').addEventListener('click', () => {
+      if (state.searchHits.length === 0) return;
+      state.searchCursor = (state.searchCursor + 1) % state.searchHits.length;
+      document.getElementById('searchCountLabel').textContent = `${state.searchCursor + 1} / ${state.searchHits.length.toLocaleString()}`;
+      jumpToMessageId(state.searchHits[state.searchCursor]);
+    });
+
+    document.getElementById('dateJumpSelect').addEventListener('change', (e) => {
+      const targetDate = e.target.value;
+      if (!targetDate) return;
+      const msg = state.messages.find(m => m.dateStr === targetDate);
+      if (msg) jumpToMessageId(msg.id);
+    });
+
+    scrollToBottomBtn.addEventListener('click', () => {
+      scrollToBottom(false);
+    });
+
+
+
+
+
+
+    // Import Modal & Native Dialog Triggers
+    const importModal = document.getElementById('importModal');
+    document.getElementById('openImportModalBtn').addEventListener('click', () => importModal.classList.remove('hidden'));
+    document.getElementById('closeImportModalBtn').addEventListener('click', () => importModal.classList.add('hidden'));
+
+    document.getElementById('nativeOpenZipBtn').addEventListener('click', () => sendHostCommand('open_zip'));
+    document.getElementById('nativeOpenFolderBtn').addEventListener('click', () => sendHostCommand('open_folder'));
+    document.getElementById('nativeOpenFilesBtn').addEventListener('click', () => sendHostCommand('open_files'));
+    // nativeAddMediaBtn moved to Settings
+    // resetDemoBtn moved to Settings
+    // giantStressTestBtn moved to Settings
+    document.getElementById('modalGiantTestBtn').addEventListener('click', () => sendHostCommand('load_giant_demo'));
+
+    document.getElementById('parsePastedBtn').addEventListener('click', () => {
+      const val = document.getElementById('pasteChatTextarea').value;
+      if (!val.trim()) return;
+      sendHostCommand('parse_text', { text: val });
+    });
+
+    // Native Zero-Copy Drag & Drop via postMessageWithAdditionalObjects
+    const dropOverlay = document.getElementById('dropOverlay');
+    let dragDepth = 0;
+
+    window.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragDepth++;
+      dropOverlay.classList.remove('hidden');
+    });
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dragDepth = Math.max(0, dragDepth - 1);
+      if (dragDepth === 0) dropOverlay.classList.add('hidden');
+    });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragDepth = 0;
+      dropOverlay.classList.add('hidden');
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        if (window.chrome && window.chrome.webview && window.chrome.webview.postMessageWithAdditionalObjects) {
+          window.chrome.webview.postMessageWithAdditionalObjects(
+            JSON.stringify({ cmd: 'drop_files' }),
+            Array.from(e.dataTransfer.files)
+          );
+        }
+      }
+    });
+
+    // Lightbox Buttons
+    document.getElementById('closeLightboxBtn').addEventListener('click', () => {
+      document.getElementById('lightboxModal').classList.add('hidden');
+      document.getElementById('lightboxStage').innerHTML = '';
+    });
+    document.getElementById('lightboxPrevBtn').addEventListener('click', () => {
+      if (state.lightboxItems.length === 0) return;
+      state.lightboxIndex = (state.lightboxIndex - 1 + state.lightboxItems.length) % state.lightboxItems.length;
+      renderLightboxSlide();
+    });
+    document.getElementById('lightboxNextBtn').addEventListener('click', () => {
+      if (state.lightboxItems.length === 0) return;
+      state.lightboxIndex = (state.lightboxIndex + 1) % state.lightboxItems.length;
+      renderLightboxSlide();
+    });
+    document.getElementById('lightboxJumpBtn').addEventListener('click', () => {
+      const msg = state.lightboxItems[state.lightboxIndex];
+      document.getElementById('lightboxModal').classList.add('hidden');
+      document.getElementById('lightboxStage').innerHTML = '';
+      if (msg) jumpToMessageId(msg.id);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      const lbOpen = !document.getElementById('lightboxModal').classList.contains('hidden');
+      if (lbOpen) {
+        if (e.key === 'Escape') document.getElementById('closeLightboxBtn').click();
+        if (e.key === 'ArrowLeft') document.getElementById('lightboxPrevBtn').click();
+        if (e.key === 'ArrowRight') document.getElementById('lightboxNextBtn').click();
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (settingsModal && !settingsModal.classList.contains('hidden')) {
+          settingsModal.classList.add('hidden');
+          return;
+        }
+        if (importModal && !importModal.classList.contains('hidden')) {
+          importModal.classList.add('hidden');
+          return;
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        searchBar.classList.remove('hidden');
+        searchInput.focus();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+        e.preventDefault();
+        if (settingsModal) settingsModal.classList.toggle('hidden');
+      }
+    });
+
+    // Request initial Demo Chat from Native Host on boot
+    window.addEventListener('DOMContentLoaded', () => {
+      initSettingsFromStorage();
+      sendHostCommand('app_ready');
+    });
+  
+    
+    window.__runComprehensiveDiagnostics = async function() {
+      const results = {
+        timestamp: new Date().toISOString(),
+        totalMessages: state.messages ? state.messages.length : 0,
+        platformTheme: document.documentElement.getAttribute('data-app-theme'),
+        tests: [],
+        summary: { total: 0, passed: 0, failed: 0, warnings: 0 },
+        discoveredBugs: []
+      };
+
+      function record(category, name, passed, details = {}, bugDesc = null) {
+        results.summary.total++;
+        if (passed) {
+          results.summary.passed++;
+        } else {
+          results.summary.failed++;
+          if (bugDesc) results.discoveredBugs.push({ category, name, bugDesc, details });
+        }
+        results.tests.push({ category, name, passed, details });
+      }
+
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+      try {
+        // ===================================================================
+        // 1. TEST JUMP TO MESSAGE SYSTEM
+        // ===================================================================
+        const chatScrollEl = document.getElementById('chatScroll');
+        const scrollRect = chatScrollEl.getBoundingClientRect();
+
+        // 1.1 Jump to first message
+        if (state.messages && state.messages.length > 0) {
+          const firstMsg = state.messages[0];
+          jumpToMessageId(firstMsg.id);
+          await sleep(200);
+
+          const el1 = document.getElementById(`msg-${firstMsg.id}`);
+          if (!el1) {
+            record('Jump System', 'Jump to First Message (id: ' + firstMsg.id + ')', false, { error: 'Element msg-' + firstMsg.id + ' not in DOM' }, 'Target message element msg-' + firstMsg.id + ' not found in DOM after jump.');
+          } else {
+            const r1 = el1.getBoundingClientRect();
+            const isVisible1 = (r1.bottom > scrollRect.top && r1.top < scrollRect.bottom);
+            const distFromCenter = Math.abs((r1.top + r1.height / 2) - (scrollRect.top + scrollRect.height / 2));
+            record('Jump System', 'Jump to First Message (id: ' + firstMsg.id + ')', isVisible1, {
+              top: r1.top, bottom: r1.bottom, scrollRectTop: scrollRect.top, scrollRectBottom: scrollRect.bottom,
+              distFromCenter: Math.round(distFromCenter), isVisible: isVisible1
+            }, isVisible1 ? null : 'Element msg-' + firstMsg.id + ' is not within viewport after jump.');
+          }
+
+          // 1.2 Jump to mid/last message
+          const midIdx = Math.floor(state.messages.length / 2);
+          const midMsg = state.messages[midIdx];
+          jumpToMessageId(midMsg.id);
+          await sleep(200);
+
+          const elMid = document.getElementById(`msg-${midMsg.id}`);
+          if (!elMid) {
+            record('Jump System', 'Jump to Mid Message (id: ' + midMsg.id + ', idx: ' + midIdx + ')', false, { error: 'Element not in DOM' }, 'Mid message element not rendered after jump.');
+          } else {
+            const rMid = elMid.getBoundingClientRect();
+            const isVisibleMid = (rMid.bottom > scrollRect.top && rMid.top < scrollRect.bottom);
+            const distFromCenter = Math.abs((rMid.top + rMid.height / 2) - (scrollRect.top + scrollRect.height / 2));
+            record('Jump System', 'Jump to Mid Message (id: ' + midMsg.id + ', idx: ' + midIdx + ')', isVisibleMid, {
+              top: rMid.top, bottom: rMid.bottom, distFromCenter: Math.round(distFromCenter), isVisible: isVisibleMid
+            }, isVisibleMid ? null : 'Mid message is outside viewport after jump.');
+          }
+
+          // 1.3 Jump to Last message
+          const lastMsg = state.messages[state.messages.length - 1];
+          jumpToMessageId(lastMsg.id);
+          await sleep(200);
+
+          const elLast = document.getElementById(`msg-${lastMsg.id}`);
+          if (!elLast) {
+            record('Jump System', 'Jump to Last Message (id: ' + lastMsg.id + ')', false, { error: 'Element not in DOM' }, 'Last message element not rendered after jump.');
+          } else {
+            const rLast = elLast.getBoundingClientRect();
+            const isVisibleLast = (rLast.bottom > scrollRect.top && rLast.top < scrollRect.bottom);
+            record('Jump System', 'Jump to Last Message (id: ' + lastMsg.id + ')', isVisibleLast, {
+              top: rLast.top, bottom: rLast.bottom, isVisible: isVisibleLast
+            }, isVisibleLast ? null : 'Last message is outside viewport after jump.');
+          }
+        }
+
+        // 1.4 Jump from Lightbox
+        if (state.lightboxItems && state.lightboxItems.length > 0) {
+          const lbItem = state.lightboxItems[0];
+          openLightboxByMsgId(lbItem.id);
+          await sleep(100);
+
+          const lbModal = document.getElementById('lightboxModal');
+          const wasOpen = !lbModal.classList.contains('hidden');
+
+          const jumpBtn = document.getElementById('lightboxJumpBtn');
+          if (jumpBtn) {
+            jumpBtn.click();
+            await sleep(250);
+
+            const isClosed = lbModal.classList.contains('hidden');
+            const targetEl = document.getElementById(`msg-${lbItem.id}`);
+            const rTarget = targetEl ? targetEl.getBoundingClientRect() : null;
+            const isVis = rTarget && (rTarget.bottom > scrollRect.top && rTarget.top < scrollRect.bottom);
+
+            record('Lightbox Jump', 'Lightbox Jump Button Functionality', isClosed && isVis, {
+              wasOpen, isClosedNow: isClosed, targetFound: !!targetEl, isTargetVisible: isVis
+            }, (!isClosed || !isVis) ? 'Lightbox jump button either failed to close modal or failed to center target message in viewport.' : null);
+          } else {
+            record('Lightbox Jump', 'Lightbox Jump Button Found', false, {}, 'lightboxJumpBtn element missing from DOM.');
+          }
+        }
+
+        // 1.5 Jump from Media Drawer Cards
+        const drawerJumpBtn = document.querySelector('.jump-msg-btn');
+        if (drawerJumpBtn) {
+          drawerJumpBtn.click();
+          await sleep(250);
+          record('Drawer Jump', 'Media Card Jump Button Click', true, { found: true });
+        } else {
+          record('Drawer Jump', 'Media Card Jump Button Found in Drawer', false, {}, 'No .jump-msg-btn found in media drawer.');
+        }
+
+        // 1.6 Jump to Date Header
+        const dateHeader = document.querySelector('#drawerContent .space-y-2 div');
+        if (dateHeader) {
+          dateHeader.click();
+          await sleep(200);
+          record('Drawer Jump', 'Date Header Click Jump', true, { found: true });
+        }
+
+        // 1.7 Jump While In Incompatible Filter
+        if (state.messages && state.messages.length > 1) {
+          // Switch to audio filter
+          const audioBtn = document.querySelector('[data-filter="audio"]');
+          if (audioBtn) audioBtn.click();
+          await sleep(100);
+
+          // Find a non-audio message
+          const nonAudio = state.messages.find(m => m.attType !== 'audio' && !m.isSystem);
+          if (nonAudio) {
+            jumpToMessageId(nonAudio.id);
+            await sleep(250);
+
+            const activeNow = state.activeFilter;
+            const targetEl = document.getElementById(`msg-${nonAudio.id}`);
+            const r = targetEl ? targetEl.getBoundingClientRect() : null;
+            const isVis = r && (r.bottom > scrollRect.top && r.top < scrollRect.bottom);
+
+            record('Jump System', 'Cross-Filter Jump (Audio Filter -> Text Msg)', activeNow === 'all' && isVis, {
+              activeFilterBefore: 'audio', activeFilterAfter: activeNow, isVisible: isVis
+            }, (activeNow !== 'all' || !isVis) ? 'Jumping to a message hidden by active filter failed to reset filter to "all" or render the message.' : null);
+          }
+        }
+
+        // Reset filter
+        const allBtn = document.querySelector('[data-filter="all"]');
+        if (allBtn) allBtn.click();
+        await sleep(100);
+
+        // ===================================================================
+        // 2. TEST SEARCH SYSTEM
+        // ===================================================================
+        const searchInput = document.getElementById('chatSearchInput');
+        const searchCountLabel = document.getElementById('searchCountLabel');
+        const searchNextBtn = document.getElementById('searchNextBtn');
+        const searchPrevBtn = document.getElementById('searchPrevBtn');
+
+        if (searchInput && searchCountLabel) {
+          // Search for a common term or letter
+          runSearch('the');
+          await sleep(150);
+
+          const hitCount = state.searchHits ? state.searchHits.length : 0;
+          const labelText = searchCountLabel.textContent;
+          record('Search System', 'Search Execution & Hit Counting', hitCount >= 0, { query: 'the', hits: hitCount, labelText });
+
+          if (hitCount > 1 && searchNextBtn && searchPrevBtn) {
+            const cursorBefore = state.searchCursor;
+            searchNextBtn.click();
+            await sleep(150);
+            const cursorAfterNext = state.searchCursor;
+
+            searchPrevBtn.click();
+            await sleep(150);
+            const cursorAfterPrev = state.searchCursor;
+
+            record('Search System', 'Search Next / Prev Stepping', (cursorAfterNext !== cursorBefore), {
+              cursorBefore, cursorAfterNext, cursorAfterPrev
+            });
+          }
+
+          // Clear search
+          runSearch('');
+          await sleep(100);
+          record('Search System', 'Search Clear', state.searchQuery === '', { activeQuery: state.searchQuery });
+        }
+
+        // ===================================================================
+        // 3. TEST SETTINGS MODAL & CUSTOMIZATION
+        // ===================================================================
+        const openSettingsBtn = document.getElementById('openSettingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+
+        if (openSettingsBtn && settingsModal) {
+          openSettingsBtn.click();
+          await sleep(100);
+          const isOpen = !settingsModal.classList.contains('hidden');
+          record('Settings Modal', 'Open Settings Modal', isOpen);
+
+          // Test Theme Buttons
+          const themeChoices = ['wa', 'tg', 'guild', 'bubble', 'gradient'];
+          let allThemesWork = true;
+          for (const t of themeChoices) {
+            const btn = document.querySelector(`[data-theme-choice="${t}"]`);
+            if (btn) {
+              btn.click();
+              const applied = document.documentElement.getAttribute('data-app-theme');
+              if (applied !== t) allThemesWork = false;
+            }
+          }
+          record('Settings Modal', 'Theme Switcher (wa, tg, guild, bubble, gradient)', allThemesWork, { allThemesWork });
+
+          // Test Dark/Light Toggle
+          const themeLightBtn = document.getElementById('themeLightBtn');
+          const themeDarkBtn = document.getElementById('themeDarkBtn');
+          if (themeLightBtn && themeDarkBtn) {
+            themeLightBtn.click();
+            const isLight = document.documentElement.classList.contains('light');
+            themeDarkBtn.click();
+            const isDark = !document.documentElement.classList.contains('light');
+            record('Settings Modal', 'Dark / Light Mode Toggle', isLight && isDark, { isLight, isDark });
+          }
+
+          // Test Font Choices
+          const fontChoices = ['jakarta', 'inter', 'outfit', 'lexend', 'system', 'mono'];
+          let allFontsWork = true;
+          for (const f of fontChoices) {
+            const btn = document.querySelector(`[data-font-choice="${f}"]`);
+            if (btn) {
+              btn.click();
+              const curFont = document.documentElement.style.getPropertyValue('--app-font-family');
+              if (!curFont) allFontsWork = false;
+            }
+          }
+          record('Settings Modal', 'Font Family Switcher (6 fonts)', allFontsWork);
+
+          // Test Font Size Slider
+          const fontSizeSlider = document.getElementById('fontSizeSlider');
+          if (fontSizeSlider) {
+            fontSizeSlider.value = 16;
+            fontSizeSlider.dispatchEvent(new Event('input'));
+            const curSize = document.documentElement.style.getPropertyValue('--chat-font-size');
+            record('Settings Modal', 'Font Size Slider (16px)', curSize === '16px', { curSize });
+          }
+
+          // Test Bubble Density
+          const compactBtn = document.querySelector('[data-density-choice="compact"]');
+          const normalBtn = document.querySelector('[data-density-choice="normal"]');
+          if (compactBtn && normalBtn) {
+            compactBtn.click();
+            const compactPadding = document.documentElement.style.getPropertyValue('--bubble-padding-y');
+            normalBtn.click();
+            const normalPadding = document.documentElement.style.getPropertyValue('--bubble-padding-y');
+            record('Settings Modal', 'Bubble Density Toggle (Compact vs Normal)', compactPadding !== normalPadding, { compactPadding, normalPadding });
+          }
+
+          if (closeSettingsBtn) {
+            closeSettingsBtn.click();
+            await sleep(100);
+            const isClosed = settingsModal.classList.contains('hidden');
+            record('Settings Modal', 'Close Settings Modal', isClosed);
+          }
+        }
+
+        // ===================================================================
+        // 4. TEST PERSPECTIVE SWITCHER
+        // ===================================================================
+        const mainPersp = document.getElementById('mainPerspectiveSelect');
+        if (mainPersp && mainPersp.options.length > 1) {
+          const original = mainPersp.value;
+          const alternate = mainPersp.options[1].value;
+          mainPersp.value = alternate;
+          mainPersp.dispatchEvent(new Event('change'));
+          await sleep(150);
+
+          const synced = state.meSender === alternate;
+          const chatSub = document.getElementById('chatSubtitle').textContent;
+
+          record('Perspective Switcher', 'Main Header Perspective Dropdown Switch', synced, {
+            original, alternate, currentMeSender: state.meSender, chatSub
+          });
+
+          // Restore
+          mainPersp.value = original;
+          mainPersp.dispatchEvent(new Event('change'));
+          await sleep(100);
+        }
+
+        // ===================================================================
+        // 5. TEST MEDIA DRAWER CONTROLS
+        // ===================================================================
+        const drawerSortBtn = document.getElementById('drawerSortBtn');
+        if (drawerSortBtn) {
+          const beforeSort = state.drawerSortChronological;
+          drawerSortBtn.click();
+          const afterSort = state.drawerSortChronological;
+          record('Media Drawer', 'Sort Order Toggle (Chronological vs Newest First)', beforeSort !== afterSort, { beforeSort, afterSort });
+        }
+
+        const expandDrawerBtn = document.getElementById('expandDrawerBtn');
+        if (expandDrawerBtn) {
+          const beforeWide = state.drawerWide;
+          expandDrawerBtn.click();
+          const afterWide = state.drawerWide;
+          record('Media Drawer', 'Drawer Expand / Contract Toggle', beforeWide !== afterWide, { beforeWide, afterWide });
+          expandDrawerBtn.click(); // restore
+        }
+
+        // Drawer Tabs
+        const drawerTabs = ['all_media', 'media', 'stickers', 'audio', 'stats'];
+        let tabsWork = true;
+        for (const dt of drawerTabs) {
+          const tb = document.querySelector(`.drawer-tab[data-tab="${dt}"]`);
+          if (tb) {
+            tb.click();
+            if (state.activeDrawerTab !== dt) tabsWork = false;
+          }
+        }
+        record('Media Drawer', 'Drawer Tabs Navigation (All, Photos, Stickers, Audio, Stats)', tabsWork);
+
+        // ===================================================================
+        // 6. TEST SCROLL TO BOTTOM BUTTON
+        // ===================================================================
+        const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+        if (scrollToBottomBtn) {
+          chatScrollEl.scrollTop = 0;
+          await sleep(150);
+          const isBtnVisible = !scrollToBottomBtn.classList.contains('hidden');
+
+          scrollToBottomBtn.click();
+          await sleep(350);
+          const isAtBottom = Math.abs(chatScrollEl.scrollHeight - chatScrollEl.scrollTop - chatScrollEl.clientHeight) < 250 || chatScrollEl.scrollTop >= (chatScrollEl.scrollHeight - chatScrollEl.clientHeight - 50);
+
+          record('Scroll System', 'Scroll to Bottom Floating Action Button', isBtnVisible && isAtBottom, {
+            btnWasVisibleAtTop: isBtnVisible, isAtBottomNow: isAtBottom, scrollTop: chatScrollEl.scrollTop
+          });
+        }
+
+        // ===================================================================
+        // 7. TEST AUDIO PLAYER SPEED & PLAY
+        // ===================================================================
+        const voicePlayer = document.querySelector('.voice-player');
+        if (voicePlayer) {
+          const speedBtn = voicePlayer.querySelector('.voice-speed-btn');
+          if (speedBtn) {
+            const s1 = speedBtn.textContent;
+            speedBtn.click();
+            const s2 = speedBtn.textContent;
+            record('Audio Player', 'Voice Note Speed Toggle (1x -> 1.5x/2x)', s1 !== s2, { before: s1, after: s2 });
+          }
+        }
+
+      } catch (err) {
+        results.discoveredBugs.push({
+          category: 'Diagnostics Engine',
+          name: 'Unexpected Exception',
+          bugDesc: err.message || err.toString(),
+          stack: err.stack
+        });
+      }
+
+      sendHostCommand('diagnostics_complete', { report: results });
+      return JSON.stringify(results, null, 2);
+    };
+
+</script>
+</body>
+</html>
