@@ -19,7 +19,7 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 
-namespace WhatsAppChatStudio
+namespace ChatVaultStudio
 {
     internal static class Program
     {
@@ -39,7 +39,7 @@ namespace WhatsAppChatStudio
             // 1. Setup embedded assembly resolver & extract WebView2Loader.dll before touching WebView2 types
             string appData = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "WhatsAppChatStudio"
+                "ChatVaultStudio"
             );
             NativeFolder = Path.Combine(appData, "native_v1");
             Directory.CreateDirectory(NativeFolder);
@@ -168,7 +168,7 @@ namespace WhatsAppChatStudio
         public StudioForm(string[] args)
         {
             _startupArgs = args;
-            Text = "WhatsApp Chat Studio — Portable Native Edition";
+            Text = "ChatVault Studio — Portable Chat Archive Viewer";
             Size = new Size(1340, 860);
             MinimumSize = new Size(860, 560);
             StartPosition = FormStartPosition.CenterScreen;
@@ -224,7 +224,7 @@ namespace WhatsAppChatStudio
                 using (Font f = new Font("Segoe UI", 11f, FontStyle.Bold))
                 using (SolidBrush greenText = new SolidBrush(Color.FromArgb(6, 95, 70)))
                 {
-                    g.DrawString("WA", f, greenText, 18f, 22f);
+                    g.DrawString("CV", f, greenText, 19f, 22f);
                 }
             }
             return Icon.FromHandle(bmp.GetHicon());
@@ -236,7 +236,7 @@ namespace WhatsAppChatStudio
             {
                 string userDataDir = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "WhatsAppChatStudio",
+                    "ChatVaultStudio",
                     "WebView2Data"
                 );
                 Directory.CreateDirectory(userDataDir);
@@ -259,7 +259,7 @@ namespace WhatsAppChatStudio
             {
                 MessageBox.Show(
                     "Failed to initialize WebView2 runtime:\n" + ex.Message,
-                    "WhatsApp Chat Studio",
+                    "ChatVault Studio",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
@@ -692,7 +692,7 @@ namespace WhatsAppChatStudio
 
                 if (msg.Contains("\"render_complete\""))
                 {
-                    if (_startupArgs != null && _startupArgs.Length >= 2 && (_startupArgs[0] == "--verify" || _startupArgs[0] == "--verify-giant"))
+                    if (_startupArgs != null && _startupArgs.Length >= 2 && (_startupArgs[0] == "--verify" || _startupArgs[0] == "--verify-giant" || _startupArgs[0] == "--verify-settings"))
                     {
                         string outShot = _startupArgs[1];
                         CaptureAndExitAsync(outShot);
@@ -716,7 +716,7 @@ namespace WhatsAppChatStudio
                 {
                     using (OpenFileDialog ofd = new OpenFileDialog())
                     {
-                        ofd.Title = "Select Exported Chat .ZIP Archive (WhatsApp, Telegram, Discord, Instagram, Messenger)";
+                        ofd.Title = "Select Exported Chat .ZIP Archive";
                         ofd.Filter = "Chat Export ZIP Archives (*.zip)|*.zip|All Files (*.*)|*.*";
                         if (ofd.ShowDialog(this) == DialogResult.OK)
                         {
@@ -730,7 +730,7 @@ namespace WhatsAppChatStudio
                 {
                     using (FolderBrowserDialog fbd = new FolderBrowserDialog())
                     {
-                        fbd.Description = "Select Unzipped Chat Export Folder (WhatsApp, Telegram Desktop, Discord, Instagram, Messenger)";
+                        fbd.Description = "Select Unzipped Chat Export Folder (log file + media)";
                         fbd.ShowNewFolderButton = false;
                         if (fbd.ShowDialog(this) == DialogResult.OK && !string.IsNullOrEmpty(fbd.SelectedPath))
                         {
@@ -784,7 +784,7 @@ namespace WhatsAppChatStudio
                         string rawJsonText = ExtractJsonStringField(msg, "text");
                         if (!string.IsNullOrEmpty(rawJsonText))
                         {
-                            Task.Run(() => ImportRawText("Pasted WhatsApp Chat", rawJsonText, false));
+                            Task.Run(() => ImportRawText("Pasted Chat", rawJsonText, false));
                         }
                     }
                     return;
@@ -797,6 +797,14 @@ namespace WhatsAppChatStudio
         {
             try
             {
+                if (_startupArgs != null && _startupArgs.Length > 0 && _startupArgs[0] == "--verify-settings")
+                {
+                    if (_controller != null && _controller.CoreWebView2 != null)
+                    {
+                        await _controller.CoreWebView2.ExecuteScriptAsync("var btn = document.getElementById('openSettingsBtn'); if (btn) btn.click();");
+                        await Task.Delay(300);
+                    }
+                }
                 await Task.Delay(350);
                 if (_controller != null && _controller.CoreWebView2 != null)
                 {
@@ -839,7 +847,7 @@ namespace WhatsAppChatStudio
         }
 
         /**********************************************************************
-         * 3. MULTI-THREADED NATIVE IMPORT PIPELINE (ZIP / FOLDER / FILES)
+         * 3. MULTI-THREADED NATIVE IMPORT PIPEtab-log (ZIP / FOLDER / FILES)
          **********************************************************************/
         private void ResetMediaState()
         {
@@ -896,12 +904,12 @@ namespace WhatsAppChatStudio
 
                     if (expanded.Count > 0)
                     {
-                        ImportFileList("Imported WhatsApp Chat", expanded.ToArray(), false, sw);
+                        ImportFileList("Imported Chat", expanded.ToArray(), false, sw);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Import error: " + ex.Message, "WhatsApp Chat Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Import error: " + ex.Message, "ChatVault Studio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             });
         }
@@ -1200,8 +1208,8 @@ namespace WhatsAppChatStudio
 
         /**********************************************************************
          * 4. UNIVERSAL MULTI-PLATFORM NATIVE C# PARSER
-         * Supports WhatsApp, Telegram (JSON/HTML), Discord (JSON/TXT/CSV),
-         * Instagram & Messenger (Meta JSON/HTML), LINE, KakaoTalk, Signal & CSV
+         * Supports phone-messenger, paper-plane (JSON/HTML), guild-chat (JSON/TXT/CSV),
+         * social DM (social JSON/HTML), tab-log, bracket-log, secure-messenger & CSV
          **********************************************************************/
         private static bool IsChatLogFile(string fileName)
         {
@@ -1227,26 +1235,26 @@ namespace WhatsAppChatStudio
             RegexOptions.Compiled
         );
 
-        // Discord TXT export: [24-Oct-25 02:32 PM] SenderName
-        private static readonly Regex DiscordTxtHeaderRegex = new Regex(
+        // guild-chat TXT export: [24-Oct-25 02:32 PM] SenderName
+        private static readonly Regex GuildTxtHeaderRegex = new Regex(
             @"^\[(\d{1,4}[\/.\-][A-Za-z0-9]{1,4}[\/.\-]\d{1,4})\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AaPp][Mm])?)\]\s+([^\r\n]+)$",
             RegexOptions.Compiled
         );
 
-        // LINE date header: 2025/10/24(Fri) or 2025.10.24 Friday
-        private static readonly Regex LineDateRegex = new Regex(
+        // tab-log date header: 2025/10/24(Fri) or 2025.10.24 Friday
+        private static readonly Regex StickyDateRegex = new Regex(
             @"^(\d{4}[\/.\-]\d{1,2}[\/.\-]\d{1,2})(?:\s*\([^)]+\)|\s+[A-Za-z]+)?$",
             RegexOptions.Compiled
         );
 
-        // LINE message row: 14:32\tSender\tMessage
-        private static readonly Regex LineMsgRegex = new Regex(
+        // tab-log message row: 14:32\tSender\tMessage
+        private static readonly Regex TabMsgRegex = new Regex(
             @"^(\d{1,2}:\d{2}(?:\s*[AaPp][Mm])?)\t([^\t]+)\t(.*)$",
             RegexOptions.Compiled
         );
 
-        // KakaoTalk message row: [Sender] [2:32 PM] Message
-        private static readonly Regex KakaoMsgRegex = new Regex(
+        // bracket-log message row: [Sender] [2:32 PM] Message
+        private static readonly Regex BracketMsgRegex = new Regex(
             @"^\[([^\]]+)\]\s*\[([^\]]*\d{1,2}:\d{2}[^\]]*)\]\s*(.*)$",
             RegexOptions.Compiled
         );
@@ -1309,7 +1317,7 @@ namespace WhatsAppChatStudio
             }
         }
 
-        private static string FlattenTelegramText(object textObj)
+        private static string FlattenRichText(object textObj)
         {
             if (textObj == null) return "";
             string s = textObj as string;
@@ -1383,11 +1391,11 @@ namespace WhatsAppChatStudio
 
             int[] hourHist = new int[24];
             List<ParsedMessage> messages = new List<ParsedMessage>(16384);
-            string detectedPlatform = "whatsapp";
+            string detectedPlatform = "emerald";
 
             string trimmed = (rawContent ?? "").TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
 
-            // 1. JSON EXPORTS (Telegram Desktop result.json, Instagram/Messenger message_1.json, Discord JSON, Signal/Generic JSON)
+            // 1. JSON EXPORTS (paper-plane desktop result.json, social DM message_1.json, guild-chat JSON, secure-messenger/Generic JSON)
             if (trimmed.StartsWith("{") || trimmed.StartsWith("["))
             {
                 try
@@ -1426,24 +1434,24 @@ namespace WhatsAppChatStudio
                             if (d != null) msgDicts.Add(d);
                         }
 
-                        // Detect Meta (Instagram / Messenger) export and reverse to chronological order
+                        // Detect social (social DM) export and reverse to chronological order
                         if (msgDicts.Count > 0 && msgDicts[0].ContainsKey("sender_name") && msgDicts[0].ContainsKey("timestamp_ms"))
                         {
-                            detectedPlatform = "instagram";
+                            detectedPlatform = "gradient";
                             msgDicts.Reverse();
                         }
                         else if (rootDict != null && (rootDict.ContainsKey("guild") || rootDict.ContainsKey("channel")))
                         {
-                            detectedPlatform = "discord";
+                            detectedPlatform = "guild";
                         }
                         else if (msgDicts.Count > 0 && (msgDicts[0].ContainsKey("Timestamp") && msgDicts[0].ContainsKey("Contents")))
                         {
-                            detectedPlatform = "discord";
+                            detectedPlatform = "guild";
                             msgDicts.Reverse();
                         }
                         else
                         {
-                            detectedPlatform = "telegram";
+                            detectedPlatform = "sky";
                         }
 
                         for (int i = 0; i < msgDicts.Count; i++)
@@ -1457,7 +1465,7 @@ namespace WhatsAppChatStudio
                             string expAttType = null;
                             bool isSys = false;
 
-                            // Case A: Meta (Instagram / Facebook Messenger)
+                            // Case A: social (social DM / social DM)
                             if (m.ContainsKey("sender_name") && m.ContainsKey("timestamp_ms"))
                             {
                                 sender = FixMetaMojibake(m["sender_name"] != null ? m["sender_name"].ToString() : "User");
@@ -1494,7 +1502,7 @@ namespace WhatsAppChatStudio
                                     }
                                 }
                             }
-                            // Case B: Discord (DiscordChatExporter or Data Package)
+                            // Case B: guild-chat (guild exporter or Data Package)
                             else if (m.ContainsKey("author") || (m.ContainsKey("Timestamp") && m.ContainsKey("Contents")))
                             {
                                 if (m.ContainsKey("timestamp") && m["timestamp"] != null)
@@ -1540,7 +1548,7 @@ namespace WhatsAppChatStudio
                                     expAttFile = Path.GetFileName(m["Attachments"].ToString().Split('?')[0]);
                                 }
                             }
-                            // Case C: Telegram Desktop result.json & Generic JSON
+                            // Case C: paper-plane desktop result.json & Generic JSON
                             else
                             {
                                 if (m.ContainsKey("date") && m["date"] != null)
@@ -1559,7 +1567,7 @@ namespace WhatsAppChatStudio
                                     sender = m["sender"].ToString();
 
                                 if (m.ContainsKey("text"))
-                                    bodyText = FlattenTelegramText(m["text"]);
+                                    bodyText = FlattenRichText(m["text"]);
                                 else if (m.ContainsKey("body") && m["body"] != null)
                                     bodyText = m["body"].ToString();
 
@@ -1593,12 +1601,12 @@ namespace WhatsAppChatStudio
                 }
                 catch { }
             }
-            // 2. HTML EXPORTS (Telegram Desktop messages.html, Discord HTML, Meta HTML)
+            // 2. HTML EXPORTS (paper-plane desktop messages.html, guild-chat HTML, social HTML)
             else if (trimmed.StartsWith("<") && (trimmed.IndexOf("message", StringComparison.OrdinalIgnoreCase) >= 0))
             {
                 detectedPlatform = trimmed.IndexOf("tgme_", StringComparison.OrdinalIgnoreCase) >= 0 || trimmed.IndexOf("pull_right date", StringComparison.OrdinalIgnoreCase) >= 0
-                    ? "telegram"
-                    : "instagram";
+                    ? "sky"
+                    : "gradient";
 
                 Regex htmlMsgRegex = new Regex(
                     @"<div\s+class=""message\s+default[^""]*""[^>]*>([\s\S]*?)(?=<div\s+class=""message\s+|<div\s+class=""page_body|$)",
@@ -1651,7 +1659,7 @@ namespace WhatsAppChatStudio
                 }
             }
 
-            // 3. TEXT & CSV EXPORTS (WhatsApp, Discord TXT, LINE, KakaoTalk, Signal, CSV)
+            // 3. TEXT & CSV EXPORTS (phone-messenger, guild-chat TXT, tab-log, bracket-log, secure-messenger, CSV)
             if (messages.Count == 0)
             {
                 string[] lines = rawContent.Split(new string[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
@@ -1669,15 +1677,15 @@ namespace WhatsAppChatStudio
                 {
                     string line = lines[i];
 
-                    // Check LINE sticky date header: 2025/10/24(Fri)
-                    Match lineDateM = LineDateRegex.Match(line.Trim());
+                    // Check tab-log sticky date header: 2025/10/24(Fri)
+                    Match lineDateM = StickyDateRegex.Match(line.Trim());
                     if (lineDateM.Success)
                     {
                         activeStickyDate = lineDateM.Groups[1].Value;
                         continue;
                     }
 
-                    // A. WhatsApp iOS & Android Header
+                    // A. phone-messenger iOS & Android Header
                     Match m = HeaderRegex.Match(line);
                     if (m.Success)
                     {
@@ -1726,11 +1734,11 @@ namespace WhatsAppChatStudio
                         continue;
                     }
 
-                    // B. Discord TXT Header: [24-Oct-25 02:32 PM] SenderName
-                    Match dm = DiscordTxtHeaderRegex.Match(line);
+                    // B. guild-chat TXT Header: [24-Oct-25 02:32 PM] SenderName
+                    Match dm = GuildTxtHeaderRegex.Match(line);
                     if (dm.Success)
                     {
-                        detectedPlatform = "discord";
+                        detectedPlatform = "guild";
                         if (hasCurrent)
                         {
                             FinalizeParsedMessage(messages, curDateIdx, curTimeStr, curSenderIdx, curIsSystem, curBody.ToString(), participantStats, null, null);
@@ -1749,11 +1757,11 @@ namespace WhatsAppChatStudio
                         continue;
                     }
 
-                    // C. LINE Tab-Separated Message: 14:32\tSender\tMessage
-                    Match lm = LineMsgRegex.Match(line);
+                    // C. tab-log Tab-Separated Message: 14:32\tSender\tMessage
+                    Match lm = TabMsgRegex.Match(line);
                     if (lm.Success)
                     {
-                        detectedPlatform = "telegram";
+                        detectedPlatform = "sky";
                         if (hasCurrent)
                         {
                             FinalizeParsedMessage(messages, curDateIdx, curTimeStr, curSenderIdx, curIsSystem, curBody.ToString(), participantStats, null, null);
@@ -1769,8 +1777,8 @@ namespace WhatsAppChatStudio
                         continue;
                     }
 
-                    // D. KakaoTalk Message: [Sender] [2:32 PM] Message
-                    Match km = KakaoMsgRegex.Match(line);
+                    // D. bracket-log Message: [Sender] [2:32 PM] Message
+                    Match km = BracketMsgRegex.Match(line);
                     if (km.Success)
                     {
                         if (hasCurrent)
@@ -2012,7 +2020,7 @@ namespace WhatsAppChatStudio
             StringBuilder sb = new StringBuilder(messages.Count * 96 + 4096);
             sb.Append('{');
             sb.Append("\"sessionId\":").Append(sessionId).Append(',');
-            sb.Append("\"platform\":\"").Append(EscapeJson(platform ?? "whatsapp")).Append("\",");
+            sb.Append("\"platform\":\"").Append(EscapeJson(platform ?? "emerald")).Append("\",");
             sb.Append("\"chatName\":\"").Append(EscapeJson(chatName)).Append("\",");
             sb.Append("\"defaultMe\":\"").Append(EscapeJson(defaultMe)).Append("\",");
             sb.Append("\"mediaFilesCount\":").Append(mediaFilesCount).Append(',');
@@ -2132,7 +2140,7 @@ namespace WhatsAppChatStudio
             {
                 string sampleChatTxt = string.Join("\n", new string[]
                 {
-                    "10/23/26, 7:10 PM - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.",
+                    "10/23/26, 7:10 PM - This archive is stored locally on this computer. Nothing is uploaded anywhere.",
                     "10/23/26, 7:12 PM - Maya created group \"Weekend Mountain Trip 🏔️\"",
                     "10/23/26, 7:15 PM - Maya: Trail-Map-Itinerary-2026.pdf (file attached)\nHere is the offline GPX & refuge map in case cell reception drops at the pass!",
                     "10/23/26, 7:18 PM - Alex: STK-20261025-WA0002.webp (file attached)",
@@ -2151,7 +2159,7 @@ namespace WhatsAppChatStudio
                     "10/25/26, 6:10 PM - Jordan: Alpine-Shuttle-Driver.vcf (file attached)\nSaved Marco's number here for our return shuttle from Cortina.",
                     "10/25/26, 9:20 PM - Maya: IMG-20261025-WA0012.jpg (file attached)\nLong exposure shot from the refuge deck tonight 🌌",
                     "10/25/26, 9:24 PM - Maya: This message was deleted",
-                    "10/25/26, 9:25 PM - Alex: Try clicking *⚡ 25K Giant Test* in the top bar or drop your own multi-GB WhatsApp `.zip` archive to see how fast this native app runs! 🚀"
+                    "10/25/26, 9:25 PM - Alex: Open *⚙️ Settings → Tools* to run the 25K Giant Test, or drop your own multi-GB chat export `.zip` onto the window to see how fast this native app runs! 🚀"
                 });
 
                 ParseAndFinalizeChat(title, sampleChatTxt, sw);
@@ -2160,7 +2168,7 @@ namespace WhatsAppChatStudio
 
             // Build 25,000-message giant multi-year archive log
             StringBuilder giantSb = new StringBuilder(25000 * 85);
-            giantSb.AppendLine("01/01/24, 9:00 AM - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.");
+            giantSb.AppendLine("01/01/24, 9:00 AM - This archive is stored locally on this computer. Nothing is uploaded anywhere.");
             giantSb.AppendLine("01/01/24, 9:01 AM - Maya created group \"Dolomites Crew 2023–2026\"");
 
             string[] senders = new string[] { "Alex", "Maya", "Jordan", "Elena", "Liam" };
@@ -2401,9 +2409,9 @@ namespace WhatsAppChatStudio
 
         private static string CleanChatTitle(string raw)
         {
-            if (string.IsNullOrEmpty(raw)) return "WhatsApp Chat";
+            if (string.IsNullOrEmpty(raw)) return "Chat Archive";
             string s = Regex.Replace(raw, @"^WhatsApp Chat with\s+", "", RegexOptions.IgnoreCase).Trim();
-            if (string.Equals(s, "_chat", StringComparison.OrdinalIgnoreCase)) return "WhatsApp Chat";
+            if (string.Equals(s, "_chat", StringComparison.OrdinalIgnoreCase)) return "Chat Archive";
             return s;
         }
 
