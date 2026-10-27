@@ -300,6 +300,26 @@
       background: rgba(134, 150, 160, 0.55);
     }
 
+    /* Traditional Native Windows-style Scrollbar on Chat History */
+    #chatScroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(134, 150, 160, 0.45) transparent;
+    }
+    #chatScroll::-webkit-scrollbar {
+      width: 9px;
+    }
+    #chatScroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #chatScroll::-webkit-scrollbar-thumb {
+      background: rgba(134, 150, 160, 0.4);
+      border-radius: 6px;
+    }
+    #chatScroll::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+
     .wa-sticker-img {
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
@@ -558,26 +578,15 @@
         <span id="floatingDateText" class="px-3.5 py-1 rounded-full text-xs font-semibold bg-[var(--card)]/95 border border-[var(--border)] text-[var(--foreground)] shadow-md backdrop-blur-md"></span>
       </div>
 
-      <!-- Virtualized Scroll Container -->
-      <div id="chatScroll" class="flex-1 overflow-y-auto px-3 sm:px-8 md:px-14 pr-10 py-4 space-y-1 select-text">
-        <!-- Messages rendered inside sliding window -->
-      </div>
-
-      <!-- Interactive Fast Timeline Scrubber (Right Edge) -->
-      <div id="timelineScrubber" class="absolute right-2 top-4 bottom-14 w-5 z-10 flex flex-col items-center justify-between py-2 rounded-full bg-[var(--card)]/70 hover:bg-[var(--card)] border border-[var(--border)]/60 cursor-ns-resize opacity-80 hover:opacity-100 transition group" title="Drag or click to scrub through entire chat history">
-        <span class="text-[12px] text-[var(--muted-foreground)] leading-none">▲</span>
-        <div id="timelineTrack" class="flex-1 w-full relative my-1 flex flex-col items-center">
-          <div id="timelineThumb" class="w-3 h-6 rounded-full bg-emerald-500 shadow-md absolute left-1/2 -translate-x-1/2 transition-transform group-hover:scale-110" style="top: 85%"></div>
-          <!-- Tooltip showing date & message index while scrubbing -->
-          <div id="timelineTooltip" class="hidden group-hover:block pointer-events-none absolute right-7 px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] whitespace-nowrap shadow-xl" style="top: 85%">
-            Latest
-          </div>
-        </div>
-        <span class="text-[12px] text-[var(--muted-foreground)] leading-none">▼</span>
+      <!-- Virtualized Scroll Container with Traditional Native Scrollbar -->
+      <div id="chatScroll" class="flex-1 overflow-y-auto px-3 sm:px-6 md:px-12 py-3 select-text">
+        <div id="virtualTopSpacer" class="w-full shrink-0 pointer-events-none" style="height: 0px;"></div>
+        <div id="virtualMessagesArea" class="w-full space-y-1"></div>
+        <div id="virtualBottomSpacer" class="w-full shrink-0 pointer-events-none" style="height: 0px;"></div>
       </div>
 
       <!-- Scroll-to-bottom Floating Action Button -->
-      <button id="scrollToBottomBtn" class="hidden absolute bottom-14 right-9 z-10 w-10 h-10 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] shadow-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition" title="Jump to latest message">
+      <button id="scrollToBottomBtn" class="hidden absolute bottom-14 right-6 z-10 w-10 h-10 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] shadow-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition" title="Jump to latest message">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
         </svg>
@@ -1363,20 +1372,23 @@
 
     let isShiftingWindow = false;
 
+    const AVG_ROW_HEIGHT = 68;
+
     function renderVisibleWindow() {
-      const container = document.getElementById('chatScroll');
-      container.innerHTML = '';
+      const topSpacer = document.getElementById('virtualTopSpacer');
+      const bottomSpacer = document.getElementById('virtualBottomSpacer');
+      const container = document.getElementById('virtualMessagesArea');
+      if (!container || !topSpacer || !bottomSpacer) return;
 
       const total = state.filteredMessages.length;
-      const slice = state.filteredMessages.slice(state.renderStart, state.renderEnd);
 
       document.getElementById('windowRangeText').textContent = total > 0
         ? `Showing ${(state.renderStart + 1).toLocaleString()}–${state.renderEnd.toLocaleString()} of ${total.toLocaleString()}`
         : '';
 
-      updateTimelineThumb();
-
-      if (slice.length === 0) {
+      if (total === 0) {
+        topSpacer.style.height = '0px';
+        bottomSpacer.style.height = '0px';
         container.innerHTML = `
           <div class="flex flex-col items-center justify-center h-64 text-center px-4">
             <p class="text-sm font-semibold text-[var(--foreground)]">No messages match this filter</p>
@@ -1385,21 +1397,19 @@
         return;
       }
 
+      // Maintain spacer heights to establish native scrollHeight across entire archive
+      const topHeight = Math.round(state.renderStart * AVG_ROW_HEIGHT);
+      const bottomHeight = Math.round(Math.max(0, total - state.renderEnd) * AVG_ROW_HEIGHT);
+      topSpacer.style.height = `${topHeight}px`;
+      bottomSpacer.style.height = `${bottomHeight}px`;
+
+      const slice = state.filteredMessages.slice(state.renderStart, state.renderEnd);
+      container.innerHTML = '';
+
       const isGroupChat = state.participants.length > 2;
       let lastDate = null;
       let lastSender = null;
       const frag = document.createDocumentFragment();
-
-      // Top indicator when earlier messages exist above the sliding window
-      if (state.renderStart > 0) {
-        const topBanner = document.createElement('div');
-        topBanner.className = 'flex justify-center py-2';
-        topBanner.innerHTML = `
-          <button id="manualPrevChunkBtn" class="px-3.5 py-1 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-emerald-400 hover:bg-emerald-500/10 shadow-sm transition">
-            ↑ Scroll up or click for ${state.renderStart.toLocaleString()} earlier messages
-          </button>`;
-        frag.appendChild(topBanner);
-      }
 
       for (let i = 0; i < slice.length; i++) {
         const msg = slice[i];
@@ -1486,16 +1496,6 @@
             </div>
           </div>`;
         frag.appendChild(row);
-      }
-
-      if (state.renderEnd < total) {
-        const botBanner = document.createElement('div');
-        botBanner.className = 'flex justify-center py-2';
-        botBanner.innerHTML = `
-          <button id="manualNextChunkBtn" class="px-3.5 py-1 rounded-full text-xs font-medium bg-[var(--card)] border border-[var(--border)] text-emerald-400 hover:bg-emerald-500/10 shadow-sm transition">
-            ↓ Scroll down or click for ${(total - state.renderEnd).toLocaleString()} newer messages
-          </button>`;
-        frag.appendChild(botBanner);
       }
 
       container.appendChild(frag);
@@ -1716,10 +1716,6 @@
     function bindMediaEvents(container) {
       observeViewableMedia(container);
 
-      const prevBtn = container.querySelector('#manualPrevChunkBtn');
-      if (prevBtn) prevBtn.addEventListener('click', () => shiftWindowUp(120));
-      const nextBtn = container.querySelector('#manualNextChunkBtn');
-      if (nextBtn) nextBtn.addEventListener('click', () => shiftWindowDown(120));
 
       container.querySelectorAll('[data-lightbox-id]').forEach(el => {
         el.addEventListener('click', () => openLightboxByMsgId(Number(el.dataset.lightboxId)));
@@ -2207,148 +2203,108 @@
     }
 
     /**********************************************************************
-     * 6. SEAMLESS SLIDING WINDOW SCROLL & TIMELINE SCRUBBER
+     * 6. NATIVE TRADITIONAL SCROLLBAR & VIRTUAL WINDOW ENGINE
      **********************************************************************/
     const chatScroll = document.getElementById('chatScroll');
     const floatingDatePill = document.getElementById('floatingDatePill');
     const floatingDateText = document.getElementById('floatingDateText');
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     let scrollTimer = null;
-
-    function shiftWindowUp(step = 90) {
-      if (state.renderStart <= 0 || isShiftingWindow) return;
-      isShiftingWindow = true;
-      const anchorEl = chatScroll.querySelector('[data-idx]');
-      const anchorId = anchorEl ? anchorEl.id : null;
-      const prevOffset = anchorEl ? anchorEl.getBoundingClientRect().top : 0;
-
-      state.renderStart = Math.max(0, state.renderStart - step);
-      state.renderEnd = Math.min(state.filteredMessages.length, state.renderStart + state.windowSize);
-      renderVisibleWindow();
-
-      if (anchorId) {
-        const newAnchor = document.getElementById(anchorId);
-        if (newAnchor) {
-          chatScroll.scrollTop += (newAnchor.getBoundingClientRect().top - prevOffset);
-        }
-      }
-      isShiftingWindow = false;
-    }
-
-    function shiftWindowDown(step = 90) {
-      if (state.renderEnd >= state.filteredMessages.length || isShiftingWindow) return;
-      isShiftingWindow = true;
-      const rows = chatScroll.querySelectorAll('[data-idx]');
-      const anchorEl = rows.length > 0 ? rows[rows.length - 1] : null;
-      const anchorId = anchorEl ? anchorEl.id : null;
-      const prevOffset = anchorEl ? anchorEl.getBoundingClientRect().top : 0;
-
-      state.renderEnd = Math.min(state.filteredMessages.length, state.renderEnd + step);
-      state.renderStart = Math.max(0, state.renderEnd - state.windowSize);
-      renderVisibleWindow();
-
-      if (anchorId) {
-        const newAnchor = document.getElementById(anchorId);
-        if (newAnchor) {
-          chatScroll.scrollTop += (newAnchor.getBoundingClientRect().top - prevOffset);
-        }
-      }
-      isShiftingWindow = false;
-    }
+    let isWindowUpdating = false;
+    let scrollRafId = null;
 
     chatScroll.addEventListener('scroll', () => {
-      if (isShiftingWindow) return;
+      const total = state.filteredMessages.length;
+      if (total === 0) return;
 
-      // Seamless infinite sliding window shift when approaching top or bottom
-      if (chatScroll.scrollTop < 180 && state.renderStart > 0) {
-        shiftWindowUp(90);
-        return;
-      }
-      const distFromBottom = chatScroll.scrollHeight - chatScroll.scrollTop - chatScroll.clientHeight;
-      if (distFromBottom < 180 && state.renderEnd < state.filteredMessages.length) {
-        shiftWindowDown(90);
-        return;
-      }
+      const scrollTop = chatScroll.scrollTop;
+      const clientH = chatScroll.clientHeight;
+      const scrollH = chatScroll.scrollHeight;
+      const distFromBottom = scrollH - scrollTop - clientH;
 
-      const atVeryBottom = state.renderEnd >= state.filteredMessages.length && distFromBottom < 220;
+      // Toggle scroll to bottom button
+      const atVeryBottom = distFromBottom < 220;
       scrollToBottomBtn.classList.toggle('hidden', atVeryBottom);
 
-      // Update floating date pill & timeline thumb
-      const rows = chatScroll.querySelectorAll('[data-date]');
-      let currentTopDate = '';
-      let currentTopIdx = state.renderStart;
-      const containerTop = chatScroll.getBoundingClientRect().top;
-      for (const r of rows) {
-        const rect = r.getBoundingClientRect();
-        if (rect.top <= containerTop + 65) {
-          currentTopDate = r.dataset.date;
-          if (r.dataset.idx) currentTopIdx = Number(r.dataset.idx);
-        } else {
-          break;
-        }
-      }
+      // Calculate approximate message index centered in viewport
+      const centerIdx = Math.max(0, Math.min(total - 1, Math.floor((scrollTop + (clientH / 2)) / AVG_ROW_HEIGHT)));
 
-      if (currentTopDate) {
-        floatingDateText.textContent = currentTopDate;
+      // Display floating date pill while scrolling
+      const msg = state.filteredMessages[centerIdx];
+      if (msg) {
+        floatingDateText.textContent = `${msg.dateStr} \u2022 #${(centerIdx + 1).toLocaleString()} of ${total.toLocaleString()}`;
         floatingDatePill.classList.remove('opacity-0');
-        updateTimelineThumb(currentTopIdx, currentTopDate);
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => floatingDatePill.classList.add('opacity-0'), 1100);
       }
-    });
 
-    function updateTimelineThumb(currentIdx, dateLabel) {
-      const total = Math.max(1, state.filteredMessages.length - 1);
-      const idx = currentIdx !== undefined ? currentIdx : Math.max(0, state.renderEnd - 1);
-      const ratio = Math.max(0, Math.min(1, idx / total));
-      const pct = Math.round(ratio * 88);
-      const thumb = document.getElementById('timelineThumb');
-      const tip = document.getElementById('timelineTooltip');
-      thumb.style.top = `${pct}%`;
-      tip.style.top = `${pct}%`;
-      const msg = state.filteredMessages[idx];
-      tip.textContent = `${dateLabel || msg?.dateStr || ''} (#${(idx + 1).toLocaleString()})`;
-    }
+      // Check if visible window needs to shift
+      if (total > state.windowSize && !isWindowUpdating) {
+        const windowCenter = Math.floor((state.renderStart + state.renderEnd) / 2);
+        const shiftDistance = Math.abs(centerIdx - windowCenter);
 
-    // Timeline Scrubber Dragging
-    const timelineTrack = document.getElementById('timelineTrack');
-    let isScrubbingTimeline = false;
+        // When scrolled more than 28 messages away from current window center, re-center window
+        if (shiftDistance > 28) {
+          if (scrollRafId) cancelAnimationFrame(scrollRafId);
+          scrollRafId = requestAnimationFrame(() => {
+            if (isWindowUpdating) return;
+            isWindowUpdating = true;
 
-    function scrubToClientY(clientY) {
-      const total = state.filteredMessages.length;
-      if (total === 0) return;
-      const rect = timelineTrack.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
-      const targetIdx = Math.min(total - 1, Math.floor(ratio * total));
-      const half = Math.floor(state.windowSize / 2);
-      state.renderStart = Math.max(0, Math.min(total - state.windowSize, targetIdx - half));
-      state.renderEnd = Math.min(total, state.renderStart + state.windowSize);
-      renderVisibleWindow();
-      const targetMsg = state.filteredMessages[targetIdx];
-      if (targetMsg) {
-        updateTimelineThumb(targetIdx, targetMsg.dateStr);
-        floatingDateText.textContent = `${targetMsg.dateStr} • Msg #${(targetIdx + 1).toLocaleString()}`;
-        floatingDatePill.classList.remove('opacity-0');
-        const el = document.getElementById(`msg-${targetMsg.id}`);
-        if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+            const half = Math.floor(state.windowSize / 2);
+            const newStart = Math.max(0, Math.min(total - state.windowSize, centerIdx - half));
+            const newEnd = Math.min(total, newStart + state.windowSize);
+
+            if (newStart !== state.renderStart || newEnd !== state.renderEnd) {
+              // Find an anchor currently in viewport for seamless pixel-lock during normal wheel scrolling
+              let anchorEl = null;
+              let prevOffset = 0;
+              const isHugeJump = shiftDistance > (state.windowSize * 0.7);
+
+              if (!isHugeJump) {
+                const area = document.getElementById('virtualMessagesArea');
+                if (area) {
+                  const rows = area.querySelectorAll('[data-idx]');
+                  const containerTop = chatScroll.getBoundingClientRect().top;
+                  for (const r of rows) {
+                    const rect = r.getBoundingClientRect();
+                    if (rect.top >= containerTop - 20 && rect.bottom > containerTop) {
+                      anchorEl = r;
+                      prevOffset = rect.top;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              const anchorId = anchorEl ? anchorEl.id : null;
+              state.renderStart = newStart;
+              state.renderEnd = newEnd;
+              renderVisibleWindow();
+
+              // Compensate micro-height delta for seamless scrolling
+              if (anchorId && !isHugeJump) {
+                const newAnchor = document.getElementById(anchorId);
+                if (newAnchor) {
+                  const newOffset = newAnchor.getBoundingClientRect().top;
+                  chatScroll.scrollTop += (newOffset - prevOffset);
+                }
+              }
+            }
+
+            isWindowUpdating = false;
+          });
+        }
       }
-    }
-
-    document.getElementById('timelineScrubber').addEventListener('mousedown', (e) => {
-      isScrubbingTimeline = true;
-      scrubToClientY(e.clientY);
-    });
-    window.addEventListener('mousemove', (e) => {
-      if (isScrubbingTimeline) scrubToClientY(e.clientY);
-    });
-    window.addEventListener('mouseup', () => {
-      if (isScrubbingTimeline) {
-        isScrubbingTimeline = false;
-        setTimeout(() => floatingDatePill.classList.add('opacity-0'), 900);
-      }
-    });
+    }, { passive: true });
 
     function scrollToBottom(smooth = true) {
+      const total = state.filteredMessages.length;
+      if (total === 0) return;
+      if (state.renderEnd < total) {
+        state.renderEnd = total;
+        state.renderStart = Math.max(0, total - state.windowSize);
+        renderVisibleWindow();
+      }
       chatScroll.scrollTo({ top: chatScroll.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
     }
 
@@ -2362,21 +2318,26 @@
       }
       if (idx === -1) return;
 
-      if (idx < state.renderStart || idx >= state.renderEnd) {
-        const half = Math.floor(state.windowSize / 2);
-        state.renderStart = Math.max(0, Math.min(state.filteredMessages.length - state.windowSize, idx - half));
-        state.renderEnd = Math.min(state.filteredMessages.length, state.renderStart + state.windowSize);
-        renderVisibleWindow();
-      }
+      const total = state.filteredMessages.length;
+      const half = Math.floor(state.windowSize / 2);
+      state.renderStart = Math.max(0, Math.min(Math.max(0, total - state.windowSize), idx - half));
+      state.renderEnd = Math.min(total, state.renderStart + state.windowSize);
+      renderVisibleWindow();
 
-      const targetEl = document.getElementById(`msg-${msgId}`);
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const bubble = targetEl.firstElementChild || targetEl;
-        bubble.classList.remove('msg-jump-highlight');
-        void bubble.offsetWidth;
-        bubble.classList.add('msg-jump-highlight');
-      }
+      // Instantly position scrollbar near target message
+      const targetTop = Math.max(0, (idx * AVG_ROW_HEIGHT) - (chatScroll.clientHeight / 2));
+      chatScroll.scrollTop = targetTop;
+
+      setTimeout(() => {
+        const targetEl = document.getElementById(`msg-${msgId}`);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const bubble = targetEl.firstElementChild || targetEl;
+          bubble.classList.remove('msg-jump-highlight');
+          void bubble.offsetWidth;
+          bubble.classList.add('msg-jump-highlight');
+        }
+      }, 50);
     }
 
     /**********************************************************************
